@@ -21,6 +21,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.Toolkit;
+import javax.swing.ImageIcon;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class ClienteGUI extends JFrame {
 
@@ -34,6 +38,13 @@ public class ClienteGUI extends JFrame {
 	private JButton btnAlterar;
 	private JButton btnExcluir;
 	private JButton btnSair;
+
+	private JLabel checkNome;
+	private JLabel checkEmail;
+	private JLabel checkCPF;
+	private JLabel checkTelefone;
+
+	private boolean status = true;
 
 	/**
 	 * Launch the application.
@@ -55,200 +66,489 @@ public class ClienteGUI extends JFrame {
 	 * Create the frame.
 	 */
 	public ClienteGUI() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/user.png")));
 		setTitle("Cadastro de Cliente");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 548, 579);
+		setBounds(100, 100, 548, 455);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		
+
 		JLabel lblCodigo = new JLabel("Código:");
-		
+
 		textFieldCodigo = new JTextField();
+		textFieldCodigo.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					buscarCliente();
+					textFieldNome.requestFocus();
+				}
+			}
+		});
 		textFieldCodigo.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
+
 				buscarCliente();
 			}
 		});
 		textFieldCodigo.setColumns(10);
-		
+
 		JLabel lblNome = new JLabel("Nome:");
-		
+
 		textFieldNome = new JTextField();
+		textFieldNome.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+
+				if(verificaDigitacaoNome()) {
+					textFieldNome.requestFocus();
+				} else {
+					digitacaoNomeValido();
+				}
+			}
+		});
+		textFieldNome.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+
+					if(verificaDigitacaoNome()) {
+						textFieldNome.requestFocus();
+					} else {
+						digitacaoNomeValido();
+					}
+				}
+			}
+		});
 		textFieldNome.setColumns(10);
-		
+
 		JLabel lblEmail = new JLabel("Email:");
-		
+
 		textFieldEmail = new JTextField();
+		textFieldEmail.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+
+				if(verificaDigitacaoEmail()) {
+					textFieldEmail.requestFocus();
+				} else {
+					digitacaoEmailValido();
+				}
+			}
+		});
+		textFieldEmail.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+
+					if(verificaDigitacaoEmail()) {
+						textFieldEmail.requestFocus();
+					} else {
+						digitacaoEmailValido();
+					}
+				}
+			}
+		});
 		textFieldEmail.setColumns(10);
-		
+
 		JLabel lblCPF = new JLabel("CPF:");
-		
+
 		textFieldCPF = new JTextField();
+		textFieldCPF.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+
+				if(verificaDigitacaoCPF()) {
+					textFieldCPF.requestFocus();
+				} else {
+					digitacaoCPFValido();
+				}
+			}
+		});
+		textFieldCPF.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					if(verificaDigitacaoCPF()) {
+						textFieldCPF.requestFocus();
+					} else {
+						digitacaoCPFValido();
+					}
+				}
+			}
+		});
 		textFieldCPF.setColumns(10);
-		
+
 		JLabel lblTelefone = new JLabel("Telefone:");
-		
+
 		textFieldTelefone = new JTextField();
+		textFieldTelefone.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+
+				if(verificaDigitacaoTelefone()) {
+					textFieldTelefone.requestFocus();
+				} else {
+					digitacaoTelefoneValido();
+				}				
+
+			}
+		});
+		textFieldTelefone.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					if(verificaDigitacaoTelefone()) {
+						textFieldTelefone.requestFocus();
+					} else {
+						digitacaoTelefoneValido();
+					}
+				}
+			}
+		});
 		textFieldTelefone.setColumns(10);
-		
+
 		btnIncluir = new JButton("Incluir");
+		btnIncluir.setIcon(new ImageIcon(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/application_add.png")));
 		btnIncluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				incluirCliente();
 			}
 		});
-		
+
 		btnAlterar = new JButton("Alterar");
+		btnAlterar.setIcon(new ImageIcon(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/application_edit.png")));
 		btnAlterar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				alterarCliente();
 			}
 		});
-		
+
 		btnExcluir = new JButton("Excluir");
+		btnExcluir.setIcon(new ImageIcon(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/application_delete.png")));
 		btnExcluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				excluirCliente();
 			}
 		});
-		
+
 		btnSair = new JButton("Sair");
+		btnSair.setIcon(new ImageIcon(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/sair.png")));
 		btnSair.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				fecharCliente();
 			}
 		});
+
+		checkNome = new JLabel("");
+		checkNome.setIcon(new ImageIcon(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/ok.png")));
+
+		checkEmail = new JLabel("");
+		checkEmail.setIcon(new ImageIcon(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/ok.png")));
+
+		checkCPF = new JLabel("");
+		checkCPF.setIcon(new ImageIcon(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/ok.png")));
+
+		checkTelefone = new JLabel("");
+		checkTelefone.setIcon(new ImageIcon(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/ok.png")));
+
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGap(47)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(btnIncluir)
-							.addGap(18)
-							.addComponent(btnAlterar)
-							.addGap(18)
-							.addComponent(btnExcluir)
-							.addGap(18)
-							.addComponent(btnSair)
-							.addGap(468))
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addContainerGap(48, Short.MAX_VALUE)
+						.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblCPF)
+								.addComponent(lblEmail)
+								.addComponent(lblTelefone)
+								.addComponent(lblNome)
+								.addComponent(lblCodigo)
+								.addComponent(btnIncluir))
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(lblCodigo)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(textFieldCodigo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-										.addComponent(lblCPF)
-										.addComponent(lblEmail)
-										.addComponent(lblTelefone)
-										.addComponent(lblNome))
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-										.addComponent(textFieldTelefone, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE)
 										.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-											.addComponent(textFieldEmail, GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
-											.addComponent(textFieldNome, GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
-											.addComponent(textFieldCPF, GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)))))
-							.addGap(472))))
-		);
+												.addComponent(textFieldCodigo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+												.addGroup(gl_contentPane.createSequentialGroup()
+														.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
+																.addComponent(textFieldEmail)
+																.addComponent(textFieldNome, GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
+																.addComponent(textFieldCPF)
+																.addGroup(Alignment.LEADING, gl_contentPane.createSequentialGroup()
+																		.addGap(31)
+																		.addComponent(btnAlterar)
+																		.addPreferredGap(ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+																		.addComponent(btnExcluir)
+																		.addGap(27)))
+														.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+																.addGroup(gl_contentPane.createSequentialGroup()
+																		.addGap(11)
+																		.addComponent(btnSair))
+																.addGroup(gl_contentPane.createSequentialGroup()
+																		.addGap(18)
+																		.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+																				.addComponent(checkEmail)
+																				.addComponent(checkNome)
+																				.addComponent(checkCPF))))
+														.addGap(15)))
+										.addContainerGap(33, Short.MAX_VALUE))
+								.addGroup(gl_contentPane.createSequentialGroup()
+										.addComponent(textFieldTelefone, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(ComponentPlacement.UNRELATED)
+										.addComponent(checkTelefone)
+										.addGap(206))))
+				);
 		gl_contentPane.setVerticalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGap(83)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblCodigo)
-						.addComponent(textFieldCodigo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(18)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(textFieldNome, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblNome))
-					.addGap(18)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblEmail)
-						.addComponent(textFieldEmail, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(18)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblCPF)
-						.addComponent(textFieldCPF, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(18)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblTelefone)
-						.addComponent(textFieldTelefone, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(128)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnIncluir)
-						.addComponent(btnAlterar)
-						.addComponent(btnExcluir)
-						.addComponent(btnSair))
-					.addContainerGap(130, Short.MAX_VALUE))
-		);
+						.addGap(83)
+						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblCodigo)
+								.addComponent(textFieldCodigo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addGap(18)
+						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(textFieldNome, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblNome)
+								.addComponent(checkNome))
+						.addGap(18)
+						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblEmail)
+								.addComponent(textFieldEmail, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(checkEmail))
+						.addGap(18)
+						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblCPF)
+								.addComponent(textFieldCPF, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(checkCPF))
+						.addGap(18)
+						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblTelefone)
+								.addComponent(textFieldTelefone, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(checkTelefone))
+						.addGap(94)
+						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(btnIncluir)
+								.addComponent(btnAlterar)
+								.addComponent(btnExcluir)
+								.addComponent(btnSair))
+						.addContainerGap(32, Short.MAX_VALUE))
+				);
 		contentPane.setLayout(gl_contentPane);
+
+		limpaTextoCampo();
+
+		desabilitaCheck();
+
 	}
-	
+
+	private void digitacaoNomeValido() {
+		status = true;
+		mudaStatusCheckNome();
+		checkNome.setVisible(true);
+		textFieldEmail.requestFocus();
+
+	}
+
+	private boolean verificaDigitacaoNome() {
+		boolean toReturn = true;
+
+		if(VariaveisProjeto.digitacaoCampo(textFieldNome.getText())) {
+			status = false;
+			mudaStatusCheckNome();
+			return toReturn;
+		}
+
+		toReturn = false;
+		return toReturn;
+	}
+
+	private void mudaStatusCheckNome() {
+		checkNome.setVisible(true);
+
+		if(status == false) {
+			checkNome.setIcon(new ImageIcon(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/iconFechar.png")));
+		} else {
+			checkNome.setIcon(new ImageIcon(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/ok.png")));
+		}
+
+	}
+
+	private void digitacaoEmailValido() {
+		status = true;
+		mudaStatusCheckEmail();
+		checkEmail.setVisible(true);
+		textFieldCPF.requestFocus();
+
+	}
+
+	private boolean verificaDigitacaoEmail() {
+		boolean toReturn = true;
+
+		if(VariaveisProjeto.digitacaoCampo(textFieldEmail.getText())) {
+			status = false;
+			mudaStatusCheckEmail();
+			return toReturn;
+		}
+
+		toReturn = false;
+		return toReturn;
+	}
+
+	private void mudaStatusCheckEmail() {
+		checkEmail.setVisible(true);
+
+		if(status == false) {
+			checkEmail.setIcon(new ImageIcon(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/iconFechar.png")));
+		} else {
+			checkEmail.setIcon(new ImageIcon(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/ok.png")));
+		}
+
+	}
+
+	private void digitacaoCPFValido() {
+		status = true;
+		mudaStatusCheckCPF();
+		checkCPF.setVisible(true);
+		textFieldTelefone.requestFocus();
+
+	}
+
+	private boolean verificaDigitacaoCPF() {
+		boolean toReturn = true;
+
+		if(VariaveisProjeto.digitacaoCampo(textFieldCPF.getText())) {
+			status = false;
+			mudaStatusCheckCPF();
+			return toReturn;
+		}
+
+		toReturn = false;
+		return toReturn;
+	}
+
+	private void mudaStatusCheckCPF() {
+		checkCPF.setVisible(true);
+
+		if(status == false) {
+			checkCPF.setIcon(new ImageIcon(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/iconFechar.png")));
+		} else {
+			checkCPF.setIcon(new ImageIcon(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/ok.png")));
+		}
+
+	}
+
+	private void digitacaoTelefoneValido() {
+		status = true;
+		mudaStatusCheckTelefone();
+		checkTelefone.setVisible(true);
+
+	}
+
+	private boolean verificaDigitacaoTelefone() {
+		boolean toReturn = true;
+
+		if(VariaveisProjeto.digitacaoCampo(textFieldTelefone.getText())) {
+			status = false;
+			mudaStatusCheckTelefone();
+			return toReturn;
+		}
+
+		toReturn = false;
+		return toReturn;
+	}
+
+	private void mudaStatusCheckTelefone() {
+		checkTelefone.setVisible(true);
+
+		if(status == false) {
+			checkTelefone.setIcon(new ImageIcon(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/iconFechar.png")));
+		} else {
+			checkTelefone.setIcon(new ImageIcon(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/ok.png")));
+		}
+
+	}
+
+	private void desabilitaCheck() {
+		checkNome.setVisible(false);
+		checkEmail.setVisible(false);
+		checkCPF.setVisible(false);
+		checkTelefone.setVisible(false);
+	}
+
 	protected void incluirCliente() {
 		Cliente cliente = pegarDadosCliente();
 		System.out.println(cliente.toString());
-		
+
 		ClienteService clienteService = new ClienteService();
-		
+
 		clienteService.save(cliente);
 	}
-	
+
 	protected void alterarCliente() {
 		Cliente cliente = pegarDadosCliente();
-		
+
 		ClienteService clienteService = new ClienteService();
-		
+
 		clienteService.update(cliente);
 	}
-	
+
 	protected void excluirCliente() {
 		Cliente cliente = pegarDadosCliente();
-		
+
 		ClienteService clienteService = new ClienteService();
-		
+
 		clienteService.remove(cliente);
 	}
-	
+
 	private void fecharCliente() {
 		dispose();
 	}
-	
+
 	private void buscarCliente() {
 		Cliente cliente = new Cliente();
-		
+
 		if(VariaveisProjeto.digitacaoCampo(textFieldCodigo.getText())) {
 			textFieldCodigo.requestFocus();
 			return;
 		}
-		
+
 		Integer id = Integer.valueOf(textFieldCodigo.getText());
-		
+
 		ClienteService clienteService = new ClienteService();
 		cliente = clienteService.findById(id);
-		
+
 		textFieldNome.setText(cliente.getNome());
 		textFieldEmail.setText(cliente.getEmail());
 		textFieldCPF.setText(cliente.getCpf());
 		textFieldTelefone.setText(cliente.getTelefone());
 	}
-	
+
 	public Cliente pegarDadosCliente() {
 		Cliente cliente = new Cliente();
-		
+
 		if(!"".equals(textFieldCodigo.getText())) {
 			cliente.setId(Integer.valueOf(textFieldCodigo.getText()));
 		}
-		
+
 		cliente.setNome(textFieldNome.getText());
 		cliente.setEmail(textFieldEmail.getText());
 		cliente.setCpf(textFieldCPF.getText());
 		cliente.setTelefone(textFieldTelefone.getText());
 		return cliente;
+	}
+
+	private void limpaTextoCampo() {
+		textFieldCodigo.setText(VariaveisProjeto.LIMPA_CAMPO);
+		textFieldNome.setText(VariaveisProjeto.LIMPA_CAMPO);
+		textFieldEmail.setText(VariaveisProjeto.LIMPA_CAMPO);
+		textFieldTelefone.setText(VariaveisProjeto.LIMPA_CAMPO);
+
 	}
 }
