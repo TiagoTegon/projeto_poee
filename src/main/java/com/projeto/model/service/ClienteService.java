@@ -21,11 +21,14 @@ public class ClienteService extends ConexaoBancoService {
 		
 		EntityTransaction trx = this.getTransaction();
 		
-		if(validarDigitacao(cliente) == VariaveisProjeto.DIGITACAO_OK) {
+		toReturn = validarDigitacao(cliente);
+		
+		if(toReturn == VariaveisProjeto.DIGITACAO_OK) {
 			try {
 				trx.begin();
 				this.getClienteDao().save(cliente);
 				trx.commit();
+				toReturn = VariaveisProjeto.INCLUSAO_REALIZADA;
 				
 			} catch(Exception ex) {
 				ex.printStackTrace();
@@ -36,9 +39,7 @@ public class ClienteService extends ConexaoBancoService {
 			} finally {
 				this.close();
 			}
-		} else {
-			toReturn = VariaveisProjeto.CAMPO_VAZIO;
-		}
+		} 
 		return toReturn;
 	}
 	
@@ -47,11 +48,14 @@ public class ClienteService extends ConexaoBancoService {
 		
 		EntityTransaction trx = this.getTransaction();
 		
-		if(validarDigitacao(cliente) == VariaveisProjeto.DIGITACAO_OK) {
+		toReturn = validarDigitacao(cliente);
+		
+		if(toReturn == VariaveisProjeto.DIGITACAO_OK) {
 			try {
 				trx.begin();
 				this.getClienteDao().update(cliente);
 				trx.commit();
+				toReturn = VariaveisProjeto.ALTERACAO_REALIZADA;
 				
 			} catch(Exception ex) {
 				ex.printStackTrace();
@@ -62,8 +66,6 @@ public class ClienteService extends ConexaoBancoService {
 			} finally {
 				this.close();
 			}
-		} else {
-			toReturn = VariaveisProjeto.CAMPO_VAZIO;
 		}
 		return toReturn;
 	}
@@ -78,6 +80,7 @@ public class ClienteService extends ConexaoBancoService {
 				Cliente clienteEncontrado = this.getClienteDao().findById(cliente.getId());
 				this.getClienteDao().remove(clienteEncontrado);
 				trx.commit();
+				toReturn = VariaveisProjeto.EXCLUSAO_REALIZADA;
 				
 			} catch(Exception ex) {
 				ex.printStackTrace();
@@ -103,10 +106,30 @@ public class ClienteService extends ConexaoBancoService {
 		if(VariaveisProjeto.digitacaoCampo(cliente.getCpf())) {
 			return VariaveisProjeto.CAMPO_VAZIO;
 		}
+		if(VariaveisProjeto.digitacaoCampo(cliente.getNome())) {
+			return VariaveisProjeto.CAMPO_VAZIO;
+		}
+		
+		if(VariaveisProjeto.digitacaoCampo(cliente.getEmail())) {
+			return VariaveisProjeto.CAMPO_VAZIO;
+		}
+		
+		if(VariaveisProjeto.digitacaoCampo(cliente.getTelefone())) {
+			return VariaveisProjeto.CAMPO_VAZIO;
+		}
+		
 		return VariaveisProjeto.DIGITACAO_OK;
 	}
 	
 	public ClienteDao getClienteDao() {
 		return clienteDao;
+	}
+	
+	public Integer countTotalRegister() {
+		return clienteDao.countTotalRegister(Cliente.class);
+	}
+	
+	public List<Cliente> listClientePaginacao(Integer numeroPagina, Integer defaultPagina){
+		return clienteDao.listClientePaginacao(numeroPagina, defaultPagina);
 	}
 }

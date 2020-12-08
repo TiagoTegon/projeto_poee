@@ -11,8 +11,24 @@ public class VariaveisProjeto {
 	public static final Integer ERRO_ALTERACAO = 20;
 	public static final Integer ERRO_EXCLUSAO = 30;
 	
+	public static final Integer INCLUSAO_REALIZADA = 1;
+	public static final Integer ALTERACAO_REALIZADA = 2;
+	public static final Integer EXCLUSAO_REALIZADA = 3;
+	
 	public static final Integer DIGITACAO_OK = 100;
-	public static final Integer CAMPO_VAZIO = 200;
+	public static final Integer NOME_CAMPO_VAZIO = 200;
+	
+	// classe de usuário
+	public static final Integer USUARIO_USER_NAME = 201;
+	public static final Integer USUARIO_EMAIL = 202;
+	public static final Integer USUARIO_PASSWORD = 203;
+	
+	// classe de departamento
+	public static final Integer DEPARTAMENTO_NOME = 300;
+	
+	// classe de cliente
+	public static final Integer CAMPO_VAZIO = 250;
+	
 	public static final String LIMPA_CAMPO = "";
 	
 	
@@ -36,6 +52,19 @@ public class VariaveisProjeto {
 		}
 		
 		if("".equals(texto.trim())) {
+			return true;
+		}
+
+		return false;
+	}
+	
+	public static boolean digitacaoCampo(float texto) {
+		
+		if (Objects.isNull(texto)) {
+			return true;
+		}
+		
+		if("".equals(String.valueOf(texto))) {
 			return true;
 		}
 

@@ -8,6 +8,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import com.projeto.model.models.Usuario;
+
 public abstract class GenericDao<T, ID extends Serializable> {
 
     private EntityManager entityManager;
@@ -49,6 +51,12 @@ public abstract class GenericDao<T, ID extends Serializable> {
     	return lista;
     }
 
+	public Integer countTotalRegister(Class<T> classe) {
+		Query query = this.getEntityManager().createQuery("SELECT count(o) FROM "+classe.getSimpleName()+" o");
+		Long total = (Long) query.getSingleResult();
+		return total.intValue();
+	}
+    
     public EntityManager getEntityManager() {
         return entityManager;
     }

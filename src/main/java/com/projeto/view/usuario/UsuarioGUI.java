@@ -1,4 +1,4 @@
-package com.projeto.view;
+package com.projeto.view.usuario;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
@@ -8,12 +8,14 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import com.projeto.estrutura.util.VariaveisProjeto;
+import com.projeto.model.models.Departamento;
 import com.projeto.model.models.Usuario;
 import com.projeto.model.service.UsuarioService;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JRadioButton;
@@ -419,34 +421,117 @@ public class UsuarioGUI extends JFrame {
 	}
 
 	protected void incluirUsuario() {
+		Integer toReturn = 0;
+		
 		Usuario usuario = pegarDadosUsuario();
-		System.out.println(usuario.toString());
+		
+		Departamento departamento = new Departamento();
+		
+		departamento.setId(1L);
+		departamento.setNome("vendas");
+		
+		usuario.setDepartamento(departamento);
 		
 		UsuarioService usuarioService = new UsuarioService();
 		
-		usuarioService.save(usuario);
+		toReturn = usuarioService.save(usuario);
 		
-		limpaTextoCampo();
+		erroDigitacao(toReturn);
+		
+		if(toReturn == VariaveisProjeto.ERRO_INCLUSAO) {
+			showMensagem("Erro na Inclusão do Registro, verifique com seu administrador",
+					     "Erro", JOptionPane.ERROR_MESSAGE);
+		}
+		
+		if(toReturn == VariaveisProjeto.INCLUSAO_REALIZADA) {
+			showMensagem("Inclusão do Registro realizada com sucesso!", 
+					     "OK", JOptionPane.OK_OPTION);
+				
+			limpaTextoCampo();
+			usuario = new Usuario();
+		}
+		
+		
 	}
 
 	protected void alterarUsuario() {
+		Integer toReturn = 0;
+		
 		Usuario usuario = pegarDadosUsuario();
+		
+		Departamento departamento = new Departamento();
+		
+		departamento.setId(1L);
+		departamento.setNome("vendas");
 			
 		UsuarioService usuarioService = new UsuarioService();
 		
-		usuarioService.update(usuario);
+		toReturn = usuarioService.update(usuario);
+
 		
-		limpaTextoCampo();
+		erroDigitacao(toReturn);
+		
+		if(toReturn == VariaveisProjeto.ERRO_ALTERACAO) {
+			showMensagem("Erro na Alteração do Registro, verifique com seu administrador",
+					     "Erro", JOptionPane.ERROR_MESSAGE);
+		}
+		
+		if(toReturn == VariaveisProjeto.ALTERACAO_REALIZADA) {
+			showMensagem("Alteração do Registro realizada com sucesso!",
+					     "OK", JOptionPane.OK_OPTION);
+				
+			limpaTextoCampo();
+			usuario = new Usuario();
+		}
+		
+	}
+
+	private void erroDigitacao(Integer toReturn) {
+		if(toReturn == VariaveisProjeto.USUARIO_USER_NAME) {
+			status = false;
+			mudaStatusCheckNome();
+			showMensagem("Erro na digitação do Nome, verifique!", "Erro", JOptionPane.ERROR_MESSAGE);
+		}
+		
+		if(toReturn == VariaveisProjeto.USUARIO_EMAIL) {
+			status = false;
+			mudaStatusCheckNome();
+			showMensagem("Erro na digitação do Email, verifique!", "Erro", JOptionPane.ERROR_MESSAGE);
+		}
+		
+		if(toReturn == VariaveisProjeto.USUARIO_PASSWORD) {
+			status = false;
+			mudaStatusCheckNome();
+			showMensagem("Erro na digitação da Senha, verifique!", "Erro", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 	
 	protected void excluirUsuario() {
+		Integer toReturn = 0;
+		
+		Departamento departamento = new Departamento();
+		
+		departamento.setId(1L);
+		departamento.setNome("vendas");
+		
 		Usuario usuario = pegarDadosUsuario();
 		
 		UsuarioService usuarioService = new UsuarioService();
 		
-		usuarioService.remove(usuario);
+		toReturn = usuarioService.remove(usuario);	
 		
-		limpaTextoCampo();
+		if(toReturn == VariaveisProjeto.ERRO_EXCLUSAO) {
+			showMensagem("Erro na Exclusão do Registro, verifique com seu administrador",
+					     "Erro", JOptionPane.ERROR_MESSAGE);
+		}
+		
+		if(toReturn == VariaveisProjeto.EXCLUSAO_REALIZADA) {
+			showMensagem("Exclusão do Registro realizada com sucesso!",
+					     "OK", JOptionPane.OK_OPTION);
+				
+			limpaTextoCampo();
+			usuario = new Usuario();
+		}
 	}
 	
 	private void fecharUsuario() {
@@ -514,6 +599,9 @@ public class UsuarioGUI extends JFrame {
 		passwordFieldSenha.setText(VariaveisProjeto.LIMPA_CAMPO);
 		rdbtnAtivo.setSelected(false);
 		rdbtnAdmin.setSelected(false);
-		
+	}
+	
+	private void showMensagem(String mensagem, String status, int option) {
+		JOptionPane.showMessageDialog(null,	mensagem, status, option);
 	}
 }
