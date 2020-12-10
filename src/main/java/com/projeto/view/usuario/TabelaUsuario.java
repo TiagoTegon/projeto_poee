@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableRowSorter;
 
+import com.projeto.estrutura.util.VariaveisProjeto;
 import com.projeto.model.models.Usuario;
 import com.projeto.model.service.UsuarioService;
 
@@ -18,10 +19,12 @@ import javax.swing.JTable;
 import javax.swing.JButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
+import javax.swing.RowFilter;
 import javax.swing.ImageIcon;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
 
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
@@ -31,6 +34,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.KeyAdapter;
 
 public class TabelaUsuario extends JInternalFrame {
 	
@@ -54,7 +58,7 @@ public class TabelaUsuario extends JInternalFrame {
 	private JButton btnUltimo;
 	private JLabel lblNewLabel;
 	private JComboBox<String> comboBox;
-	private JTextField textFieldPesquisar;
+	private JTextField textFieldNome;
 	private JLabel lblInicio;
 	private JLabel lblTotal;
 	private JLabel lblFinal;
@@ -66,6 +70,8 @@ public class TabelaUsuario extends JInternalFrame {
 	private Integer defaultPagina = 5;
 	private Integer totalPagina = 1;
 	private Integer numeroPagina = 1;
+	private JLabel lblNewLabel_1;
+	private JLabel lblNewLabel_2;
 
 	
 	/**
@@ -102,10 +108,22 @@ public class TabelaUsuario extends JInternalFrame {
 		scrollPane = new JScrollPane();
 		
 		btnIncluir = new JButton("Incluir");
+		btnIncluir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				incluirUsuario();
+				iniciaPaginacao();
+			}
+		});
 		btnIncluir.setMnemonic(KeyEvent.VK_I);
 		btnIncluir.setIcon(new ImageIcon(TabelaUsuario.class.getResource("/com/projeto/estrutura/imagens/book_add.png")));
 		
 		btnAlterar = new JButton("Alterar");
+		btnAlterar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				alterarUsuario();
+				iniciaPaginacao();
+			}
+		});
 		btnAlterar.setMnemonic(KeyEvent.VK_A);
 		btnAlterar.setIcon(new ImageIcon(TabelaUsuario.class.getResource("/com/projeto/estrutura/imagens/book_edit.png")));
 		
@@ -138,10 +156,23 @@ public class TabelaUsuario extends JInternalFrame {
 		
 		JLabel lblPesquisar = new JLabel("Pesquisar:");
 		
-		textFieldPesquisar = new JTextField();
-		textFieldPesquisar.setColumns(10);
+		textFieldNome = new JTextField();
+		textFieldNome.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				String filtro = textFieldNome.getText();
+				
+				filtraNomeUsuario(filtro);
+			}
+		});
+		textFieldNome.setColumns(10);
 		
 		JButton btnPesquisar = new JButton("Pesquisar");
+		btnPesquisar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
 		btnPesquisar.setMnemonic(KeyEvent.VK_P);
 		btnPesquisar.setToolTipText("Pesquisar usuário cadastrado");
 		btnPesquisar.setIcon(new ImageIcon(TabelaUsuario.class.getResource("/com/projeto/estrutura/imagens/search.png")));
@@ -153,21 +184,16 @@ public class TabelaUsuario extends JInternalFrame {
 		lblTotal = new JLabel("Total");
 		
 		lblFinal = new JLabel("50");
+		
+		lblNewLabel_1 = new JLabel("Total de Registros:");
+		
+		lblNewLabel_2 = new JLabel("de");
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addGap(31)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnIncluir)
-							.addGap(18)
-							.addComponent(btnAlterar)
-							.addGap(18)
-							.addComponent(btnExcluir)
-							.addGap(17)
-							.addComponent(btnSair))
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(lblNewLabel)
@@ -179,18 +205,31 @@ public class TabelaUsuario extends JInternalFrame {
 							.addComponent(lblPagina)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(lblInicio)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(lblNewLabel_2)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblTotal)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblFinal))
+							.addComponent(lblTotal))
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addComponent(lblPesquisar)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(textFieldPesquisar, 375, 375, 375)
+							.addComponent(textFieldNome, 375, 375, 375)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(btnPesquisar))
-						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 528, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap())
+						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 528, GroupLayout.PREFERRED_SIZE)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnIncluir)
+							.addGap(18)
+							.addComponent(btnAlterar)
+							.addGap(18)
+							.addComponent(btnExcluir)
+							.addGap(17)
+							.addComponent(btnSair)
+							.addPreferredGap(ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
+							.addComponent(lblNewLabel_1)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(lblFinal)))
+					.addGap(44))
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -198,34 +237,42 @@ public class TabelaUsuario extends JInternalFrame {
 					.addGap(9)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblPesquisar)
-						.addComponent(textFieldPesquisar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(textFieldNome, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnPesquisar))
 					.addGap(18)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 263, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPane.createSequentialGroup()
-							.addGap(14)
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-								.addComponent(lblNewLabel)
-								.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addGap(11)
+							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_contentPane.createSequentialGroup()
+									.addGap(14)
+									.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+										.addComponent(lblNewLabel)
+										.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+								.addGroup(gl_contentPane.createSequentialGroup()
+									.addGap(11)
+									.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+										.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+											.addComponent(lblPagina)
+											.addComponent(lblInicio)
+											.addComponent(lblNewLabel_2)
+											.addComponent(lblTotal))
+										.addComponent(panel, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))))
+							.addGap(20)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
+								.addComponent(btnSair)
 								.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-									.addComponent(lblPagina)
-									.addComponent(lblInicio)
-									.addComponent(lblTotal)
-									.addComponent(lblFinal))
-								.addComponent(panel, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))))
-					.addGap(20)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
-						.addComponent(btnSair)
-						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-							.addComponent(btnIncluir)
-							.addComponent(btnAlterar)
-							.addComponent(btnExcluir)))
-					.addContainerGap())
+									.addComponent(btnIncluir)
+									.addComponent(btnAlterar)
+									.addComponent(btnExcluir)))
+							.addGap(27))
+						.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblFinal)
+								.addComponent(lblNewLabel_1))
+							.addGap(46))))
 		);
 		
 		btnPrimeiro = new JButton("");
@@ -299,6 +346,33 @@ public class TabelaUsuario extends JInternalFrame {
 		tabelaUsuario = new JTable();
 		scrollPane.setViewportView(tabelaUsuario);
 		contentPane.setLayout(gl_contentPane);
+	}
+	
+	protected void filtraNomeUsuario(String filtro) {
+		RowFilter<TabelaUsuarioModel, Object> rowFilter = null;
+		try {
+			rowFilter = RowFilter.regexFilter(filtro);
+		} catch(PatternSyntaxException e) {
+			return;
+		}
+		sortTabelaUsuario.setRowFilter(rowFilter);
+		
+	}
+	
+	protected void alterarUsuario() {
+		if(tabelaUsuario.getSelectedRow() != -1 && tabelaUsuario.getSelectedRow() < tabelaUsuarioModel.getRowCount()) {
+			int linha = tabelaUsuario.getSelectedRow();
+			UsuarioGUI usuario = new UsuarioGUI(new JFrame(), true, tabelaUsuario, tabelaUsuarioModel, linha, VariaveisProjeto.ALTERACAO);
+			usuario.setLocationRelativeTo(null);
+			usuario.setVisible(true);
+		}
+	}
+	
+	protected void incluirUsuario() {
+		UsuarioGUI usuario = new UsuarioGUI(new JFrame(), true, tabelaUsuario, tabelaUsuarioModel, 0, VariaveisProjeto.INCLUSAO);
+		usuario.setLocationRelativeTo(null);
+		usuario.setResizable(false);
+		usuario.setVisible(true);
 	}
 	
 	protected void iniciaPaginacao() {
