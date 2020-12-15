@@ -9,9 +9,9 @@ import com.projeto.model.dao.UsuarioDao;
 import com.projeto.model.models.Usuario;
 
 public class UsuarioService extends ConexaoBancoService {
-	
+
 	private UsuarioDao usuarioDao;
-	
+
 	public UsuarioService() {
 		this.usuarioDao = new UsuarioDao(this.getEntityManager());
 	}
@@ -21,9 +21,9 @@ public class UsuarioService extends ConexaoBancoService {
 		Integer toReturn = 0;
 
 		EntityTransaction trx = this.getTransaction();
-		
+
 		toReturn = validarDigitacao(usuario);
-		
+
 		if (toReturn == VariaveisProjeto.DIGITACAO_OK) {
 
 			try {
@@ -52,9 +52,9 @@ public class UsuarioService extends ConexaoBancoService {
 		Integer toReturn = 0;
 
 		EntityTransaction trx = this.getTransaction();
-		
+
 		toReturn = validarDigitacao(usuario);
-		
+
 		if (toReturn == VariaveisProjeto.DIGITACAO_OK) {
 
 			try {
@@ -118,11 +118,11 @@ public class UsuarioService extends ConexaoBancoService {
 		if (VariaveisProjeto.digitacaoCampo(usuario.getUsername())) {
 			return VariaveisProjeto.USUARIO_USER_NAME;
 		}
-		
+
 		if (VariaveisProjeto.digitacaoCampo(usuario.getEmail())) {
 			return VariaveisProjeto.USUARIO_EMAIL;
 		}
-		
+
 		if (VariaveisProjeto.digitacaoCampo(usuario.getPassword())) {
 			return VariaveisProjeto.USUARIO_PASSWORD;
 		}
@@ -135,12 +135,12 @@ public class UsuarioService extends ConexaoBancoService {
 	}
 
 	public Integer countTotalRegister() {
-		
+
 		return usuarioDao.countTotalRegister(Usuario.class);
 	}
 
 	public List<Usuario> listUsuarioPaginacao(Integer numeroPagina, Integer defaultPagina) {
-		
+
 		return usuarioDao.listUsuarioPaginacao(numeroPagina, defaultPagina);
 	}
 }

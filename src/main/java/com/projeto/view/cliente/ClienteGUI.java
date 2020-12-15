@@ -1,4 +1,4 @@
-package com.projeto.view;
+package com.projeto.view.cliente;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
@@ -14,6 +14,7 @@ import com.projeto.model.service.ClienteService;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JButton;
@@ -28,6 +29,8 @@ import java.awt.event.KeyEvent;
 
 public class ClienteGUI extends JFrame {
 
+	private static final long serialVersionUID = -5509604983623751167L;
+	
 	private JPanel contentPane;
 	private JTextField textFieldCodigo;
 	private JTextField textFieldNome;
@@ -66,6 +69,15 @@ public class ClienteGUI extends JFrame {
 	 * Create the frame.
 	 */
 	public ClienteGUI() {
+		initComponents();
+
+		limpaTextoCampo();
+
+		desabilitaCheck();
+
+	}
+
+	private void initComponents() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/user.png")));
 		setTitle("Cadastro de Cliente");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -82,7 +94,7 @@ public class ClienteGUI extends JFrame {
 			public void keyPressed(KeyEvent e) {
 
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-					buscarCliente();
+					//buscarCliente();
 					textFieldNome.requestFocus();
 				}
 			}
@@ -90,8 +102,7 @@ public class ClienteGUI extends JFrame {
 		textFieldCodigo.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
-
-				buscarCliente();
+				//buscarCliente();
 			}
 		});
 		textFieldCodigo.setColumns(10);
@@ -341,11 +352,6 @@ public class ClienteGUI extends JFrame {
 						.addContainerGap(32, Short.MAX_VALUE))
 				);
 		contentPane.setLayout(gl_contentPane);
-
-		limpaTextoCampo();
-
-		desabilitaCheck();
-
 	}
 
 	private void digitacaoNomeValido() {
@@ -483,28 +489,97 @@ public class ClienteGUI extends JFrame {
 	}
 
 	protected void incluirCliente() {
+		Integer toReturn = 0;
+		
 		Cliente cliente = pegarDadosCliente();
 		System.out.println(cliente.toString());
 
 		ClienteService clienteService = new ClienteService();
 
 		clienteService.save(cliente);
+		
+		erroDigitacao(toReturn);
+		
+		if(toReturn == VariaveisProjeto.ERRO_INCLUSAO) {
+			showMensagem("Erro na Inclusão do Registro, verifique com seu administrador",
+							"Erro", JOptionPane.ERROR_MESSAGE);
+		}
+		if(toReturn == VariaveisProjeto.INCLUSAO_REALIZADA) {
+			showMensagem("Inclusão do Registro realizada com sucesso!",
+							"OK", JOptionPane.OK_OPTION);
+			limpaTextoCampo();
+			//tabelaClienteModel.fireTabeDataChenged();
+			cliente = new Cliente();
+		}
 	}
 
 	protected void alterarCliente() {
+		Integer toReturn = 0;
+		
 		Cliente cliente = pegarDadosCliente();
 
 		ClienteService clienteService = new ClienteService();
 
 		clienteService.update(cliente);
+		
+		erroDigitacao(toReturn);
+		
+		if(toReturn == VariaveisProjeto.ERRO_ALTERACAO) {
+			showMensagem("Erro na Alteração do Registro, verifique com seu administrador",
+							"Erro", JOptionPane.ERROR_MESSAGE);
+		}
+		if(toReturn == VariaveisProjeto.ALTERACAO_REALIZADA) {
+			showMensagem("Alteração do Registro realizada com sucesso!",
+							"OK", JOptionPane.OK_OPTION);
+			//tabelaClienteModel.fireTabeDataChenged();
+			limpaTextoCampo();
+			cliente = new Cliente();
+		}
 	}
 
+	private void erroDigitacao(Integer toReturn) {
+		if(toReturn == VariaveisProjeto.CLIENTE_CPF) {
+			status = false;
+			mudaStatusCheckCPF();
+			showMensagem("Erro na digitação no CPF, verifique!", "Erro", JOptionPane.ERROR_MESSAGE);
+		}
+		if(toReturn == VariaveisProjeto.CLIENTE_NOME) {
+			status = false;
+			mudaStatusCheckCPF();
+			showMensagem("Erro na digitação no NOME, verifique!", "Erro", JOptionPane.ERROR_MESSAGE);
+		}
+		if(toReturn == VariaveisProjeto.CLIENTE_EMAIL) {
+			status = false;
+			mudaStatusCheckCPF();
+			showMensagem("Erro na digitação no EMAIL, verifique!", "Erro", JOptionPane.ERROR_MESSAGE);
+		}
+		if(toReturn == VariaveisProjeto.CLIENTE_TELEFONE) {
+			status = false;
+			mudaStatusCheckCPF();
+			showMensagem("Erro na digitação no TELEFONE, verifique!", "Erro", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
 	protected void excluirCliente() {
+		Integer toReturn = 0;
+		
 		Cliente cliente = pegarDadosCliente();
 
 		ClienteService clienteService = new ClienteService();
 
 		clienteService.remove(cliente);
+		
+		if(toReturn == VariaveisProjeto.ERRO_EXCLUSAO) {
+			showMensagem("Erro na Exclusão do Registro, verifique com seu administrador",
+							"Erro", JOptionPane.ERROR_MESSAGE);
+		}
+		if(toReturn == VariaveisProjeto.EXCLUSAO_REALIZADA) {
+			showMensagem("Exclusão do Registro realizada com sucesso!",
+							"OK", JOptionPane.OK_OPTION);
+			limpaTextoCampo();
+			//tabelaClienteModel.fireTabeDataChenged();
+			cliente = new Cliente();
+		}
 	}
 
 	private void fecharCliente() {
@@ -513,17 +588,23 @@ public class ClienteGUI extends JFrame {
 
 	private void buscarCliente() {
 		Cliente cliente = new Cliente();
-
+		
+		/*
 		if(VariaveisProjeto.digitacaoCampo(textFieldCodigo.getText())) {
 			textFieldCodigo.requestFocus();
 			return;
 		}
-
+		
 		Integer id = Integer.valueOf(textFieldCodigo.getText());
-
+		*/
+		
+		//cliente = tabelaClienteModel.getCliente(this.linha);
+		System.out.println(cliente.toString());
 		ClienteService clienteService = new ClienteService();
-		cliente = clienteService.findById(id);
+		
+		cliente = clienteService.findById(cliente.getId());
 
+		textFieldCodigo.setText(String.valueOf(cliente.getId()));
 		textFieldNome.setText(cliente.getNome());
 		textFieldEmail.setText(cliente.getEmail());
 		textFieldCPF.setText(cliente.getCpf());
@@ -533,10 +614,12 @@ public class ClienteGUI extends JFrame {
 	public Cliente pegarDadosCliente() {
 		Cliente cliente = new Cliente();
 
-		if(!"".equals(textFieldCodigo.getText())) {
+		if(VariaveisProjeto.digitacaoCampo(textFieldCodigo.getText())) {
+			textFieldCodigo.requestFocus();
+		}
+		if(VariaveisProjeto.digitacaoCampo(textFieldCodigo.getText()) == false) {
 			cliente.setId(Integer.valueOf(textFieldCodigo.getText()));
 		}
-
 		cliente.setNome(textFieldNome.getText());
 		cliente.setEmail(textFieldEmail.getText());
 		cliente.setCpf(textFieldCPF.getText());
@@ -550,5 +633,10 @@ public class ClienteGUI extends JFrame {
 		textFieldEmail.setText(VariaveisProjeto.LIMPA_CAMPO);
 		textFieldTelefone.setText(VariaveisProjeto.LIMPA_CAMPO);
 
+	}
+	
+	private void showMensagem(String mensagem, String status, int option) {
+		JOptionPane.showMessageDialog(null, mensagem, status, option);
+		
 	}
 }

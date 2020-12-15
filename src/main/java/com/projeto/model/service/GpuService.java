@@ -10,21 +10,21 @@ import com.projeto.model.dao.GpuDao;
 import com.projeto.model.models.Gpu;
 
 public class GpuService extends ConexaoBancoService {
-	
+
 	private GpuDao gpuDao;
-	
+
 	public GpuService() {
 		this.gpuDao = new GpuDao(this.getEntityManager());
 	}
-	
+
 	public Integer save(Gpu gpu) {
 
 		Integer toReturn = 0;
 
 		EntityTransaction trx = this.getTransaction();
-		
+
 		toReturn = validarDigitacao(gpu);
-		
+
 		if (toReturn == VariaveisProjeto.DIGITACAO_OK) {
 
 			try {
@@ -53,9 +53,9 @@ public class GpuService extends ConexaoBancoService {
 		Integer toReturn = 0;
 
 		EntityTransaction trx = this.getTransaction();
-		
+
 		toReturn = validarDigitacao(gpu);
-		
+
 		if (toReturn == VariaveisProjeto.DIGITACAO_OK) {
 
 			try {
@@ -78,13 +78,13 @@ public class GpuService extends ConexaoBancoService {
 		} 
 		return toReturn;
 	}
-	
+
 	public Integer remove(Gpu gpu) {
 
 		Integer toReturn = 0;
 
 		EntityTransaction trx = this.getTransaction();
-		
+
 		try {
 
 			trx.begin();
@@ -105,42 +105,42 @@ public class GpuService extends ConexaoBancoService {
 		} 
 		return toReturn;
 	}
-	
-	
+
+
 	public Gpu findById(Integer id) {
 		return this.getGpuDao().findById(id);
 	}
-	
+
 	public List<Gpu> findAll(){
 		return this.getGpuDao().findAll(Gpu.class);
 	}
-	
+
 	private Integer validarDigitacao(Gpu gpu) {
-		
+
 		if (VariaveisProjeto.digitacaoCampo(gpu.getMarca())) {
 			return VariaveisProjeto.CAMPO_VAZIO;
 		}
-		
+
 		if (VariaveisProjeto.digitacaoCampo(gpu.getModelo())) {
 			return VariaveisProjeto.CAMPO_VAZIO;
 		}
-		
+
 		if (VariaveisProjeto.digitacaoCampo(gpu.getQtd_estoque())) {
 			return VariaveisProjeto.CAMPO_VAZIO;
 		}
-		
+
 		if (VariaveisProjeto.digitacaoCampo(gpu.getPreco())) {
 			return VariaveisProjeto.CAMPO_VAZIO;
 		}
-		
+
 		if (VariaveisProjeto.digitacaoCampo(gpu.getVram())) {
 			return VariaveisProjeto.CAMPO_VAZIO;
 		}
-		
+
 		if (VariaveisProjeto.digitacaoCampo(gpu.getTipo_memoria())) {
 			return VariaveisProjeto.CAMPO_VAZIO;
 		}
-		
+
 		if (VariaveisProjeto.digitacaoCampo(gpu.getFabricante())) {
 			return VariaveisProjeto.CAMPO_VAZIO;
 		}
@@ -150,11 +150,11 @@ public class GpuService extends ConexaoBancoService {
 	private GenericDao<Gpu, Integer> getGpuDao() {
 		return gpuDao;
 	}	
-	
+
 	public Integer countTotalRegister() {
 		return gpuDao.countTotalRegister(Gpu.class);
 	}
-	
+
 	public List<Gpu> listGpuPaginacao(Integer numeroPagina, Integer defaultPagina){
 		return gpuDao.listGpuPaginacao(numeroPagina, defaultPagina);
 	}

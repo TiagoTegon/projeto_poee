@@ -33,6 +33,33 @@ public class VariaveisProjeto {
 	
 	// classe de cliente
 	public static final Integer CAMPO_VAZIO = 250;
+	public static final Integer CLIENTE_CPF = 501;
+	public static final Integer CLIENTE_NOME = 502;
+	public static final Integer CLIENTE_EMAIL = 503;
+	public static final Integer CLIENTE_TELEFONE = 504;
+	
+	// classe de pedido
+	public static final Integer PEDIDO_DATA = 601;
+	public static final Integer PEDIDO_PRECO_TOTAL = 602;
+	
+	// classe de cpu
+	public static final Integer CPU_CACHE = 701;
+	public static final Integer CPU_MARCA = 702;
+	public static final Integer CPU_MODELO = 703;
+	public static final Integer CPU_NUCLEOS = 704;
+	public static final Integer CPU_PRECO = 705;
+	public static final Integer CPU_QTDESTOQUE = 706;
+	public static final Integer CPU_THREADS = 707;
+	public static final Integer CPU_VELOCIDADE = 708;
+	
+	// classe  de gpu
+	public static final Integer GPU_FABRICANTE = 801;
+	public static final Integer GPU_MARCA = 802;
+	public static final Integer GPU_MODELO = 803;
+	public static final Integer GPU_PRECO = 804;
+	public static final Integer GPU_QTDESTOQUE = 805;
+	public static final Integer GPU_TIPOMEMORIA = 806;
+	public static final Integer GPU_VRAM = 806;
 	
 	public static final String LIMPA_CAMPO = "";
 	

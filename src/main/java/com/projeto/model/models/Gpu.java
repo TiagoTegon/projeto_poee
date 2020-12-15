@@ -1,10 +1,13 @@
 package com.projeto.model.models;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -19,6 +22,8 @@ public class Gpu {
 	private Integer vram;
 	private String tipo_memoria;
 	private String fabricante;
+	
+	private List<Pedido> pedido;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -86,6 +91,15 @@ public class Gpu {
 		this.fabricante = fabricante;
 	}
 	
+	// Muitos para muitos
+	
+	@ManyToMany(mappedBy = "gpus")
+	public List<Pedido> getPedido() {
+		return pedido;
+	}
+	public void setPedido(List<Pedido> pedido) {
+		this.pedido = pedido;
+	}
 	
 	@Override
 	public int hashCode() {

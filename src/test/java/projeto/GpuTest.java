@@ -84,7 +84,7 @@ public class GpuTest {
 	}
 	
 	@Test(expected = Exception.class)
-	public void listarTodosGpuTabelaUsuario() {
+	public void listarTodosGpus() {
 		
 		GpuService gpuService = new GpuService();
 		

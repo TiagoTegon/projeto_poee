@@ -73,7 +73,7 @@ public class CpuTest {
 	}
 	
 	@Test(expected = Exception.class)
-	public void listarTodosCpuTabelaUsuario() {
+	public void listarTodosCpus() {
 		
 		CpuService cpuService = new CpuService();
 		

@@ -11,19 +11,19 @@ import com.projeto.model.models.Cpu;
 public class CpuService extends ConexaoBancoService {
 
 	private CpuDao cpuDao;
-	
+
 	public CpuService() {
 		this.cpuDao = new CpuDao(this.getEntityManager());
 	}
-	
+
 	public Integer save(Cpu cpu) {
 
 		Integer toReturn = 0;
 
 		EntityTransaction trx = this.getTransaction();
-		
+
 		toReturn = validarDigitacao(cpu);
-		
+
 		if (toReturn == VariaveisProjeto.DIGITACAO_OK) {
 
 			try {
@@ -46,15 +46,15 @@ public class CpuService extends ConexaoBancoService {
 		} 
 		return toReturn;
 	}
-	
+
 	public Integer update(Cpu cpu) {
 
 		Integer toReturn = 0;
 
 		EntityTransaction trx = this.getTransaction();
-		
+
 		toReturn = validarDigitacao(cpu);
-		
+
 		if (toReturn == VariaveisProjeto.DIGITACAO_OK) {
 
 			try {
@@ -77,7 +77,7 @@ public class CpuService extends ConexaoBancoService {
 		} 
 		return toReturn;
 	}
-	
+
 	public Integer remove(Cpu cpu) {
 
 		Integer toReturn = 0;
@@ -104,45 +104,45 @@ public class CpuService extends ConexaoBancoService {
 		} 
 		return toReturn;
 	}
-	
+
 	public Cpu findById(Integer id) {
 		return this.getCpuDao().findById(id);
 	}
-	
+
 	public List<Cpu> findAll(){
 		return this.getCpuDao().findAll(Cpu.class);
 	}
 
 	private Integer validarDigitacao(Cpu cpu) {
-		
+
 		if (VariaveisProjeto.digitacaoCampo(cpu.getMarca())) {
 			return VariaveisProjeto.CAMPO_VAZIO;
 		}
-		
+
 		if (VariaveisProjeto.digitacaoCampo(cpu.getModelo())) {
 			return VariaveisProjeto.CAMPO_VAZIO;
 		}
-		
+
 		if (VariaveisProjeto.digitacaoCampo(cpu.getQtd_estoque())) {
 			return VariaveisProjeto.CAMPO_VAZIO;
 		}
-		
+
 		if (VariaveisProjeto.digitacaoCampo(cpu.getPreco())) {
 			return VariaveisProjeto.CAMPO_VAZIO;
 		}
-		
+
 		if (VariaveisProjeto.digitacaoCampo(cpu.getNucleos())) {
 			return VariaveisProjeto.CAMPO_VAZIO;
 		}
-		
+
 		if (VariaveisProjeto.digitacaoCampo(cpu.getThreads())) {
 			return VariaveisProjeto.CAMPO_VAZIO;
 		}
-		
+
 		if (VariaveisProjeto.digitacaoCampo(cpu.getCache())) {
 			return VariaveisProjeto.CAMPO_VAZIO;
 		}
-		
+
 		if (VariaveisProjeto.digitacaoCampo(cpu.getVelocidade())) {
 			return VariaveisProjeto.CAMPO_VAZIO;
 		}
@@ -152,15 +152,15 @@ public class CpuService extends ConexaoBancoService {
 	private CpuDao getCpuDao() {
 		return cpuDao;
 	}
-	
+
 	public Integer countTotalRegister() {
-		
+
 		return cpuDao.countTotalRegister(Cpu.class);
 	}
 
 	public List<Cpu> listCpuPaginacao(Integer numeroPagina, Integer defaultPagina) {
-		
+
 		return cpuDao.listCpuPaginacao(numeroPagina, defaultPagina);
 	}	
-	
+
 }
