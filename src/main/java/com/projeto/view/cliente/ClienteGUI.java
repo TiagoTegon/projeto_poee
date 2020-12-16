@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 
 import com.projeto.estrutura.util.VariaveisProjeto;
@@ -18,6 +19,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JButton;
+import javax.swing.JDialog;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
@@ -27,7 +30,7 @@ import javax.swing.ImageIcon;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-public class ClienteGUI extends JFrame {
+public class ClienteGUI extends JDialog {
 
 	private static final long serialVersionUID = -5509604983623751167L;
 	
@@ -48,10 +51,16 @@ public class ClienteGUI extends JFrame {
 	private JLabel checkTelefone;
 
 	private boolean status = true;
+	
+	private JTable tabelaCliente;
+	private TabelaClienteModel tabelaClienteModel;
+	private int linha = 0;
+	private int acao = 0;
 
 	/**
 	 * Launch the application.
 	 */
+	/*
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -63,24 +72,53 @@ public class ClienteGUI extends JFrame {
 				}
 			}
 		});
-	}
+	}*/
 
 	/**
 	 * Create the frame.
 	 */
-	public ClienteGUI() {
+	public ClienteGUI(JFrame frame, boolean modal, JTable tabelaCliente, TabelaClienteModel tabelaClienteModel, int linha, int acao) {
+		
+		super(frame, modal);
+		
 		initComponents();
 
+		this.tabelaCliente = tabelaCliente;
+		this.tabelaClienteModel = tabelaClienteModel;
+		this.linha = linha;
+		this.acao = acao;
+		
 		limpaTextoCampo();
 
 		desabilitaCheck();
 
+		configuraAcaoCliente();
+	}
+
+	private void configuraAcaoCliente() {
+		if(this.acao == VariaveisProjeto.INCLUSAO) {
+			btnIncluir.setVisible(true);
+			btnAlterar.setVisible(false);
+			btnExcluir.setVisible(false);
+		}
+		if(this.acao == VariaveisProjeto.ALTERACAO) {
+			btnAlterar.setVisible(true);
+			btnExcluir.setVisible(false);
+			btnIncluir.setVisible(false);
+			buscarCliente();
+		}
+		if(this.acao == VariaveisProjeto.EXCLUSAO) {
+			btnExcluir.setVisible(true);
+			btnAlterar.setVisible(false);
+			btnIncluir.setVisible(false);
+			buscarCliente();
+		}
 	}
 
 	private void initComponents() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/user.png")));
 		setTitle("Cadastro de Cliente");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 548, 455);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -496,7 +534,7 @@ public class ClienteGUI extends JFrame {
 
 		ClienteService clienteService = new ClienteService();
 
-		clienteService.save(cliente);
+		toReturn = clienteService.save(cliente);
 		
 		erroDigitacao(toReturn);
 		
@@ -508,7 +546,7 @@ public class ClienteGUI extends JFrame {
 			showMensagem("Inclusão do Registro realizada com sucesso!",
 							"OK", JOptionPane.OK_OPTION);
 			limpaTextoCampo();
-			//tabelaClienteModel.fireTabeDataChenged();
+			tabelaClienteModel.fireTableDataChanged();
 			cliente = new Cliente();
 		}
 	}
@@ -520,7 +558,7 @@ public class ClienteGUI extends JFrame {
 
 		ClienteService clienteService = new ClienteService();
 
-		clienteService.update(cliente);
+		toReturn = clienteService.update(cliente);
 		
 		erroDigitacao(toReturn);
 		
@@ -531,7 +569,8 @@ public class ClienteGUI extends JFrame {
 		if(toReturn == VariaveisProjeto.ALTERACAO_REALIZADA) {
 			showMensagem("Alteração do Registro realizada com sucesso!",
 							"OK", JOptionPane.OK_OPTION);
-			//tabelaClienteModel.fireTabeDataChenged();
+			
+			tabelaClienteModel.fireTableDataChanged();
 			limpaTextoCampo();
 			cliente = new Cliente();
 		}
@@ -545,17 +584,17 @@ public class ClienteGUI extends JFrame {
 		}
 		if(toReturn == VariaveisProjeto.CLIENTE_NOME) {
 			status = false;
-			mudaStatusCheckCPF();
+			mudaStatusCheckNome();
 			showMensagem("Erro na digitação no NOME, verifique!", "Erro", JOptionPane.ERROR_MESSAGE);
 		}
 		if(toReturn == VariaveisProjeto.CLIENTE_EMAIL) {
 			status = false;
-			mudaStatusCheckCPF();
+			mudaStatusCheckEmail();
 			showMensagem("Erro na digitação no EMAIL, verifique!", "Erro", JOptionPane.ERROR_MESSAGE);
 		}
 		if(toReturn == VariaveisProjeto.CLIENTE_TELEFONE) {
 			status = false;
-			mudaStatusCheckCPF();
+			mudaStatusCheckTelefone();
 			showMensagem("Erro na digitação no TELEFONE, verifique!", "Erro", JOptionPane.ERROR_MESSAGE);
 		}
 	}
@@ -567,7 +606,7 @@ public class ClienteGUI extends JFrame {
 
 		ClienteService clienteService = new ClienteService();
 
-		clienteService.remove(cliente);
+		toReturn = clienteService.remove(cliente);
 		
 		if(toReturn == VariaveisProjeto.ERRO_EXCLUSAO) {
 			showMensagem("Erro na Exclusão do Registro, verifique com seu administrador",
@@ -576,8 +615,9 @@ public class ClienteGUI extends JFrame {
 		if(toReturn == VariaveisProjeto.EXCLUSAO_REALIZADA) {
 			showMensagem("Exclusão do Registro realizada com sucesso!",
 							"OK", JOptionPane.OK_OPTION);
+			
 			limpaTextoCampo();
-			//tabelaClienteModel.fireTabeDataChenged();
+			tabelaClienteModel.fireTableDataChanged();
 			cliente = new Cliente();
 		}
 	}
@@ -598,11 +638,13 @@ public class ClienteGUI extends JFrame {
 		Integer id = Integer.valueOf(textFieldCodigo.getText());
 		*/
 		
-		//cliente = tabelaClienteModel.getCliente(this.linha);
-		System.out.println(cliente.toString());
-		ClienteService clienteService = new ClienteService();
+		cliente = tabelaClienteModel.getCliente(this.linha);
 		
-		cliente = clienteService.findById(cliente.getId());
+		System.out.println(cliente.toString());
+		
+		//ClienteService clienteService = new ClienteService();
+		
+		//cliente = clienteService.findById(cliente.getId());
 
 		textFieldCodigo.setText(String.valueOf(cliente.getId()));
 		textFieldNome.setText(cliente.getNome());

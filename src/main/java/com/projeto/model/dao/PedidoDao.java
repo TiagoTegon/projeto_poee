@@ -14,12 +14,13 @@ public class PedidoDao extends GenericDao<Pedido, Integer> {
 		super(entityManager);
 	}
 
-	public List<Pedido> listPedidoPagincao(Integer numeroPagina, Integer defaultPagina) {
+	@SuppressWarnings("unchecked")
+	public List<Pedido> listPedidoPaginacao(Integer numeroPagina, Integer defaultPagina) {
 		List<Pedido> listaPedido = new ArrayList<Pedido>();
 		
 		Query query = this.getEntityManager().createQuery("SELECT u FROM Pedido u")
-																				.setFirstResult(numeroPagina)
-																				.setMaxResults(defaultPagina);
+											 .setFirstResult(numeroPagina)
+											 .setMaxResults(defaultPagina);
 		listaPedido = query.getResultList();
 		return listaPedido;
 	}

@@ -5,10 +5,10 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 
 import com.projeto.estrutura.util.VariaveisProjeto;
-import com.projeto.model.models.Cliente;
 import com.projeto.model.models.Pedido;
 import com.projeto.model.service.PedidoService;
 
@@ -18,9 +18,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ImageIcon;
-import javax.swing.JEditorPane;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -29,7 +29,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class PedidoGUI extends JFrame {
+public class PedidoGUI extends JDialog {
 
 	private static final long serialVersionUID = -1962685672039414834L;
 	
@@ -58,10 +58,16 @@ public class PedidoGUI extends JFrame {
 	private JLabel checkPrecoTotal;
 	
 	private boolean status = true;
+	
+	private JTable tabelaPedido;
+	private TabelaPedidoModel tabelaPedidoModel;
+	private int linha = 0;
+	private int acao = 0;
 
 	/**
 	 * Launch the application.
 	 */
+	/*
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -73,24 +79,53 @@ public class PedidoGUI extends JFrame {
 				}
 			}
 		});
-	}
+	}*/
 
 	/**
 	 * Create the frame.
 	 */
-	public PedidoGUI() {
+	public PedidoGUI(JFrame frame, boolean modal, JTable tabelaPedido, TabelaPedidoModel tabelaPedidoModel, int linha, int acao) {
+		
+		super(frame, modal);
+		
 		initComponents();
+		
+		this.tabelaPedido = tabelaPedido;
+		this.tabelaPedidoModel = tabelaPedidoModel;
+		this.linha = linha;
+		this.acao = acao;
 		
 		limpaTextoCampo();
 		
 		desabilitaCheck();
 		
+		configuraAcaoPedido();
+	}
+	
+	private void configuraAcaoPedido() {
+		if(this.acao == VariaveisProjeto.INCLUSAO) {
+			btnIncluir.setVisible(true);
+			btnAlterar.setVisible(false);
+			btnExcluir.setVisible(false);
+		}
+		if(this.acao == VariaveisProjeto.ALTERACAO) {
+			btnAlterar.setVisible(true);
+			btnExcluir.setVisible(false);
+			btnIncluir.setVisible(false);
+			buscarPedido();
+		}
+		if(this.acao == VariaveisProjeto.EXCLUSAO) {
+			btnExcluir.setVisible(true);
+			btnAlterar.setVisible(false);
+			btnIncluir.setVisible(false);
+			buscarPedido();
+		}
 	}
 	
 	private void initComponents() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(PedidoGUI.class.getResource("/com/projeto/estrutura/imagens/book_open.png")));
 		setTitle("Cadastro de Pedido");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 635, 520);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -416,7 +451,7 @@ public class PedidoGUI extends JFrame {
 			showMensagem("Inclusão do Registro realizada com sucesso!",
 							"OK", JOptionPane.OK_OPTION);
 			limpaTextoCampo();
-			//tabelaClienteModel.fireTabeDataChenged();
+			tabelaPedidoModel.fireTableDataChanged();
 			pedido = new Pedido();
 		}
 	}
@@ -439,7 +474,7 @@ public class PedidoGUI extends JFrame {
 		if(toReturn == VariaveisProjeto.ALTERACAO_REALIZADA) {
 			showMensagem("Alteração do Registro realizada com sucesso!",
 							"OK", JOptionPane.OK_OPTION);
-			//tabelaClienteModel.fireTabeDataChenged();
+			tabelaPedidoModel.fireTableDataChanged();
 			limpaTextoCampo();
 			pedido = new Pedido();
 		}
@@ -476,7 +511,7 @@ public class PedidoGUI extends JFrame {
 			showMensagem("Alteração do Registro realizada com sucesso!",
 							"OK", JOptionPane.OK_OPTION);
 			limpaTextoCampo();
-			//tabelaClienteModel.fireTabeDataChenged();
+			tabelaPedidoModel.fireTableDataChanged();
 			pedido = new Pedido();
 		}
 	}
@@ -488,20 +523,23 @@ public class PedidoGUI extends JFrame {
 	private void buscarPedido() {
 		Pedido pedido = new Pedido();
 		
+		/*
 		if(VariaveisProjeto.digitacaoCampo(textFieldCodigo.getText())){
 			textFieldCodigo.requestFocus();
 			return;
 		}
 		 
 		Integer id = Integer.valueOf(textFieldCodigo.getText());
+		*/
 		
-		//pedido = tabelaPedidoModel.getPedido(this.linha);
+		pedido = tabelaPedidoModel.getPedido(this.linha);
 		
 		System.out.println(pedido.toString());
 		PedidoService pedidoService = new PedidoService();
 		
-		pedido = pedidoService.findById(id);
+		pedido = pedidoService.findById(pedido.getId());
 		
+		textFieldCodigo.setText(String.valueOf(pedido.getId()));
 		textFieldData.setText(pedido.getData());
 		textFieldPrecoTotal.setText(String.valueOf(pedido.getPreco_total()));
 	}

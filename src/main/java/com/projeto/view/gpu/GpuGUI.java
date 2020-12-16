@@ -5,14 +5,12 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 
 import com.projeto.estrutura.util.VariaveisProjeto;
-import com.projeto.model.models.Cpu;
 import com.projeto.model.models.Gpu;
-import com.projeto.model.service.CpuService;
 import com.projeto.model.service.GpuService;
-import com.projeto.view.cpu.CpuGUI;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -23,6 +21,8 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JTextField;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.FocusAdapter;
@@ -30,7 +30,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class GpuGUI extends JFrame {
+public class GpuGUI extends JDialog {
 
 	private static final long serialVersionUID = -133199759741905469L;
 
@@ -64,10 +64,16 @@ public class GpuGUI extends JFrame {
 	private JButton btnSair;
 
 	private boolean status = true;
+	
+	private JTable tabelaGpu;
+	private TabelaGpuModel tabelaGpuModel;
+	private int linha = 0;
+	private int acao = 0;
 
 	/**
 	 * Launch the application.
 	 */
+	/*
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -79,22 +85,53 @@ public class GpuGUI extends JFrame {
 				}
 			}
 		});
-	}
+	}*/
 
 	/**
 	 * Create the frame.
 	 */
-	public GpuGUI() {
+	public GpuGUI(JFrame frame, boolean modal, JTable tabelaGpu, TabelaGpuModel tabelaGpuModel, int linha, int acao) {
+		
+		super(frame, modal);
+		
 		initComponents();
+		
+		this.tabelaGpu = tabelaGpu;
+		this.tabelaGpuModel = tabelaGpuModel;
+		this.linha = linha;
+		this.acao = acao;
 
 		limpaTextoCampo();
 
 		desabilitaCheck();
+		
+		configuraAcaoGpu();
 	}
+	
+	private void configuraAcaoGpu() {
+		if(this.acao == VariaveisProjeto.INCLUSAO) {
+			btnIncluir.setVisible(true);
+			btnAlterar.setVisible(false);
+			btnExcluir.setVisible(false);
+		}
+		if(this.acao == VariaveisProjeto.ALTERACAO) {
+			btnAlterar.setVisible(true);
+			btnExcluir.setVisible(false);
+			btnIncluir.setVisible(false);
+			buscarGpu();
+		}
+		if(this.acao == VariaveisProjeto.EXCLUSAO) {
+			btnExcluir.setVisible(true);
+			btnAlterar.setVisible(false);
+			btnIncluir.setVisible(false);
+			buscarGpu();
+		}
+	}	
+	
 	private void initComponents() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(GpuGUI.class.getResource("/com/projeto/estrutura/imagens/book.png")));
 		setTitle("Cadastro de Gpu");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 651, 564);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -120,14 +157,14 @@ public class GpuGUI extends JFrame {
 		textFieldCodigo.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
-				buscarGpu();
+				//buscarGpu();
 			}
 		});
 		textFieldCodigo.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-					buscarGpu();
+					//buscarGpu();
 					textFieldFabricante.requestFocus();
 				}
 			}
@@ -696,7 +733,7 @@ public class GpuGUI extends JFrame {
 			showMensagem("Inclusão do Registro realizada com sucesso!",
 					"OK", JOptionPane.OK_OPTION);
 			limpaTextoCampo();
-			//tabelaGpuModel.fireTabeDataChenged();
+			tabelaGpuModel.fireTableDataChanged();
 			gpu = new Gpu();
 		}
 	}
@@ -719,7 +756,7 @@ public class GpuGUI extends JFrame {
 		if(toReturn == VariaveisProjeto.ALTERACAO_REALIZADA) {
 			showMensagem("Alteração do Registro realizada com sucesso!",
 					"OK", JOptionPane.OK_OPTION);
-			//tabelaGpuModel.fireTabeDataChenged();
+			tabelaGpuModel.fireTableDataChanged();
 			limpaTextoCampo();
 			gpu = new Gpu();
 		}
@@ -786,7 +823,7 @@ public class GpuGUI extends JFrame {
 			showMensagem("Alteração do Registro realizada com sucesso!",
 					"OK", JOptionPane.OK_OPTION);
 			limpaTextoCampo();
-			//tabelaGpuModel.fireTabeDataChenged();
+			tabelaGpuModel.fireTableDataChanged();
 			gpu = new Gpu();
 		}
 	}
@@ -794,20 +831,24 @@ public class GpuGUI extends JFrame {
 	private void buscarGpu() {
 		Gpu gpu = new Gpu();
 
+		/*
 		if(VariaveisProjeto.digitacaoCampo(textFieldCodigo.getText())){
 			textFieldCodigo.requestFocus();
 			return;
 		}
 
 		Integer id = Integer.valueOf(textFieldCodigo.getText());
-
-		//gpu = tabelaGpuModel.getGpu(this.linha);
+		*/
+		
+		gpu = tabelaGpuModel.getGpu(this.linha);
 
 		System.out.println(gpu.toString());
-		GpuService gpuService = new GpuService();
+		
+		//GpuService gpuService = new GpuService();
 
-		gpu = gpuService.findById(id);
+		//gpu = gpuService.findById(id);
 
+		textFieldCodigo.setText(String.valueOf(gpu.getId()));
 		textFieldFabricante.setText(gpu.getFabricante());
 		textFieldMarca.setText(gpu.getMarca());
 		textFieldModelo.setText(gpu.getModelo());

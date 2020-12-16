@@ -122,7 +122,7 @@ public class PedidoService extends ConexaoBancoService {
 		return pedidoDao.countTotalRegister(Pedido.class);
 	}
 
-	public List<Pedido> listPedidoPginacao(Integer numeroPagina, Integer defaultPagina){
-		return pedidoDao.listPedidoPagincao(numeroPagina, defaultPagina);
+	public List<Pedido> listPedidoPaginacao(Integer numeroPagina, Integer defaultPagina){
+		return pedidoDao.listPedidoPaginacao(numeroPagina, defaultPagina);
 	}
 }

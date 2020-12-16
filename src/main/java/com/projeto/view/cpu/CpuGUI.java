@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 
 import com.projeto.estrutura.util.VariaveisProjeto;
@@ -21,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ImageIcon;
 import java.awt.event.KeyAdapter;
@@ -30,7 +32,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class CpuGUI extends JFrame {
+public class CpuGUI extends JDialog {
 
 	private static final long serialVersionUID = -1001988248171185209L;
 	
@@ -68,9 +70,15 @@ public class CpuGUI extends JFrame {
 
 	private boolean status = true;
 	
+	private JTable tabelaCpu;
+	private TabelaCpuModel tabelaCpuModel;
+	private int linha = 0;
+	private int acao = 0;
+	
 	/**
 	 * Launch the application.
 	 */
+	/*
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -82,23 +90,53 @@ public class CpuGUI extends JFrame {
 				}
 			}
 		});
-	}
+	}*/
 
 	/**
 	 * Create the frame.
 	 */
-	public CpuGUI() {
+	public CpuGUI(JFrame frame, boolean modal, JTable tabelaCpu, TabelaCpuModel tabelaCpuModel, int linha, int acao) {
+		
+		super(frame, modal);
+		
 		initComponents();
+		
+		this.tabelaCpu = tabelaCpu;
+		this.tabelaCpuModel = tabelaCpuModel;
+		this.linha = linha;
+		this.acao = acao;
 		
 		limpaTextoCampo();
 		
 		desabilitaCheck();
+		
+		configuraAcaoCpu();
+	}
+	
+	private void configuraAcaoCpu() {
+		if(this.acao == VariaveisProjeto.INCLUSAO) {
+			btnIncluir.setVisible(true);
+			btnAlterar.setVisible(false);
+			btnExcluir.setVisible(false);
+		}
+		if(this.acao == VariaveisProjeto.ALTERACAO) {
+			btnAlterar.setVisible(true);
+			btnExcluir.setVisible(false);
+			btnIncluir.setVisible(false);
+			buscarCpu();
+		}
+		if(this.acao == VariaveisProjeto.EXCLUSAO) {
+			btnExcluir.setVisible(true);
+			btnAlterar.setVisible(false);
+			btnIncluir.setVisible(false);
+			buscarCpu();
+		}
 	}
 	
 	private void initComponents() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(CpuGUI.class.getResource("/com/projeto/estrutura/imagens/book.png")));
 		setTitle("Cadastro de CPU");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 623, 521);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -126,14 +164,14 @@ public class CpuGUI extends JFrame {
 		textFieldCodigo.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
-				buscarCpu();
+				//buscarCpu();
 			}
 		});
 		textFieldCodigo.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-					buscarCpu();
+					//buscarCpu();
 					textFieldCache.requestFocus();
 				}
 			}
@@ -778,7 +816,7 @@ public class CpuGUI extends JFrame {
 			showMensagem("Inclusão do Registro realizada com sucesso!",
 							"OK", JOptionPane.OK_OPTION);
 			limpaTextoCampo();
-			//tabelaClienteModel.fireTabeDataChenged();
+			tabelaCpuModel.fireTableDataChanged();
 			cpu = new Cpu();
 		}
 	}
@@ -801,7 +839,7 @@ public class CpuGUI extends JFrame {
 		if(toReturn == VariaveisProjeto.ALTERACAO_REALIZADA) {
 			showMensagem("Alteração do Registro realizada com sucesso!",
 							"OK", JOptionPane.OK_OPTION);
-			//tabelaClienteModel.fireTabeDataChenged();
+			tabelaCpuModel.fireTableDataChanged();
 			limpaTextoCampo();
 			cpu = new Cpu();
 		}
@@ -874,7 +912,7 @@ public class CpuGUI extends JFrame {
 			showMensagem("Alteração do Registro realizada com sucesso!",
 							"OK", JOptionPane.OK_OPTION);
 			limpaTextoCampo();
-			//tabelaClienteModel.fireTabeDataChenged();
+			tabelaCpuModel.fireTableDataChanged();
 			cpu = new Cpu();
 		}
 	}
@@ -882,20 +920,24 @@ public class CpuGUI extends JFrame {
 	private void buscarCpu() {
 		Cpu cpu = new Cpu();
 		
+		/*
 		if(VariaveisProjeto.digitacaoCampo(textFieldCodigo.getText())){
 			textFieldCodigo.requestFocus();
 			return;
 		}
 		 
 		Integer id = Integer.valueOf(textFieldCodigo.getText());
+		*/
 		
-		//cpu = tabelaCpuModel.getCpu(this.linha);
+		cpu = tabelaCpuModel.getCpu(this.linha);
 		
 		System.out.println(cpu.toString());
-		CpuService cpuService = new CpuService();
 		
-		cpu = cpuService.findById(id);
+		//CpuService cpuService = new CpuService();
 		
+		//cpu = cpuService.findById(id);
+		
+		textFieldCodigo.setText(String.valueOf(cpu.getId()));
 		textFieldCache.setText(String.valueOf(cpu.getCache()));
 		textFieldMarca.setText(cpu.getMarca());
 		textFieldModelo.setText(cpu.getModelo());

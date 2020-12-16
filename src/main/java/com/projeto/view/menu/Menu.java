@@ -10,6 +10,10 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import com.projeto.main.Login;
+import com.projeto.view.cliente.TabelaCliente;
+import com.projeto.view.cpu.TabelaCpu;
+import com.projeto.view.gpu.TabelaGpu;
+import com.projeto.view.pedido.TabelaPedido;
 import com.projeto.view.usuario.TabelaUsuario;
 
 import javax.swing.GroupLayout;
@@ -33,6 +37,10 @@ public class Menu extends JFrame {
 	private Login login;
 	private JMenu sair;
 	private JMenuItem sair_sistema;
+	private JMenuItem pedido;
+	private JMenuItem cliente;
+	private JMenuItem cpu;
+	private JMenuItem gpu;
 	/**
 	 * Launch the application.
 	 */
@@ -88,6 +96,50 @@ public class Menu extends JFrame {
 				login.setLocationRelativeTo(null);
 			}
 		});
+		
+		pedido = new JMenuItem("Pedido");
+		pedido.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TabelaPedido tabelaPedido = new TabelaPedido();
+				centralizaForm(tabelaPedido);
+				contentPane.add(tabelaPedido);
+				tabelaPedido.setVisible(true);
+			}
+		});
+		arquivo.add(pedido);
+		
+		cliente = new JMenuItem("Cliente");
+		cliente.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TabelaCliente tabelaCliente = new TabelaCliente();
+				centralizaForm(tabelaCliente);
+				contentPane.add(tabelaCliente);
+				tabelaCliente.setVisible(true);
+			}
+		});
+		arquivo.add(cliente);
+		
+		cpu = new JMenuItem("CPU");
+		cpu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TabelaCpu tabelaCpu = new TabelaCpu();
+				centralizaForm(tabelaCpu);
+				contentPane.add(tabelaCpu);
+				tabelaCpu.setVisible(true);
+			}
+		});
+		arquivo.add(cpu);
+		
+		gpu = new JMenuItem("GPU");
+		gpu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TabelaGpu tabelaGpu = new TabelaGpu();
+				centralizaForm(tabelaGpu);
+				contentPane.add(tabelaGpu);
+				tabelaGpu.setVisible(true);
+			}
+		});
+		arquivo.add(gpu);
 		arquivo.add(logout);
 		
 		sair = new JMenu("Sair");
