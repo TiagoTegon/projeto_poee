@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -63,7 +64,7 @@ public class Pedido {
 
 	// Muitos para um
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CLIENTE_ID", nullable = false)
 	public Cliente getCliente() {
 		return cliente;
@@ -75,7 +76,7 @@ public class Pedido {
 
 	// Muitos para muitos
 	
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "PEDIDO_CPU",
 					joinColumns = @JoinColumn(name = "PEDIDO_ID"),
 					inverseJoinColumns = @JoinColumn(name = "CPU_ID"))
@@ -89,7 +90,7 @@ public class Pedido {
 
 	// Muitos para muitos
 	
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "PEDIDO_GPU",
 					joinColumns = @JoinColumn(name = "PEDIDO_ID"),
 					inverseJoinColumns = @JoinColumn(name = "GPU_ID"))	

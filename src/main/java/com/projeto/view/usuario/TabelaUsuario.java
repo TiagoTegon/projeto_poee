@@ -356,7 +356,6 @@ public class TabelaUsuario extends JInternalFrame {
 			return;
 		}
 		sortTabelaUsuario.setRowFilter(rowFilter);
-		
 	}
 	
 	protected void alterarUsuario() {

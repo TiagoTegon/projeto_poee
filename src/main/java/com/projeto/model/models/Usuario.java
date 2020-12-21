@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -83,7 +84,7 @@ public class Usuario {
 	
 	//muitos para um - usar um objeto
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "DEPARTAMENTO_ID", nullable = false)
 	public Departamento getDepartamento() {
 		return departamento;
@@ -94,7 +95,7 @@ public class Usuario {
 	
 	//muitos para muitos
 	
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "TAB_USUARIO_ROLE",
 			joinColumns = @JoinColumn(name = "USUARIO_ID"),
 			inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))

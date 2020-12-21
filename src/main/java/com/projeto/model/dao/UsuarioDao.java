@@ -21,14 +21,15 @@ public class UsuarioDao extends GenericDao<Usuario, Integer > {
 		
 		boolean ativo = true;
 		
-		Query query = this.getEntityManager().createQuery("SELECT u FROM Usuario u WHERE u.ativo =:ativo")
-											.setParameter("ativo", ativo)
-											.setFirstResult(numeroPagina)
-											.setMaxResults(defaultPagina);
+		Query query = this.getEntityManager().createQuery("SELECT u FROM Usuario u "
+											+ "LEFT JOIN FETCH u.departamento "
+											+ "LEFT JOIN FETCH u.roles "
+											+ "WHERE u.ativo =:ativo")
+											 .setParameter("ativo", ativo)
+											 .setFirstResult(numeroPagina)
+											 .setMaxResults(defaultPagina);
 		listaUsuario = query.getResultList();
 		
 		return listaUsuario;
 	}
-
-
 }

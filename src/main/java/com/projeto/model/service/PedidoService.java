@@ -109,10 +109,10 @@ public class PedidoService extends ConexaoBancoService {
 
 	public Integer validarDigitacao(Pedido pedido) {
 		if(VariaveisProjeto.digitacaoCampo(pedido.getData())) {
-			return VariaveisProjeto.CAMPO_VAZIO;
+			return VariaveisProjeto.PEDIDO_DATA;
 		}
 		if(VariaveisProjeto.digitacaoCampo(pedido.getPreco_total())) {
-			return VariaveisProjeto.CAMPO_VAZIO;
+			return VariaveisProjeto.PEDIDO_PRECO_TOTAL;
 		}
 
 		return VariaveisProjeto.DIGITACAO_OK;

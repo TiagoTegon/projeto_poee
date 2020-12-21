@@ -9,8 +9,11 @@ import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 
 import com.projeto.estrutura.util.VariaveisProjeto;
+import com.projeto.model.models.Cliente;
 import com.projeto.model.models.Pedido;
+import com.projeto.model.service.ClienteService;
 import com.projeto.model.service.PedidoService;
+import com.projeto.view.cliente.BuscaCliente;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -41,7 +44,7 @@ public class PedidoGUI extends JDialog {
 	private JTextField textFieldData;
 	private JTextField textFieldPrecoTotal;
 	private JLabel lblCliente;
-	private JTextField textFieldCliente;
+	private JTextField textFieldNomeCliente;
 	private JButton btnCliente;
 	private JLabel lblPecas;
 	private JLabel lblCpu;
@@ -63,6 +66,8 @@ public class PedidoGUI extends JDialog {
 	private TabelaPedidoModel tabelaPedidoModel;
 	private int linha = 0;
 	private int acao = 0;
+	
+	private Cliente cliente;
 
 	/**
 	 * Launch the application.
@@ -138,6 +143,7 @@ public class PedidoGUI extends JDialog {
 		lblPrecoTotal = new JLabel("Preco Total:");
 		
 		textFieldCodigo = new JTextField();
+		textFieldCodigo.setEditable(false);
 		textFieldCodigo.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
@@ -207,11 +213,17 @@ public class PedidoGUI extends JDialog {
 		
 		lblCliente = new JLabel("Cliente:");
 		
-		textFieldCliente = new JTextField();
-		textFieldCliente.setEditable(false);
-		textFieldCliente.setColumns(10);
+		textFieldNomeCliente = new JTextField();
+		textFieldNomeCliente.setEditable(false);
+		textFieldNomeCliente.setColumns(10);
 		
 		btnCliente = new JButton("Cliente");
+		btnCliente.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				buscaCliente();
+			}
+		});
+		
 		btnCliente.setIcon(new ImageIcon(PedidoGUI.class.getResource("/com/projeto/estrutura/imagens/search.png")));
 		
 		lblPecas = new JLabel("Peças");
@@ -299,7 +311,7 @@ public class PedidoGUI extends JDialog {
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
 								.addComponent(textFieldGpu, Alignment.LEADING)
 								.addComponent(textFieldCpu, Alignment.LEADING)
-								.addComponent(textFieldCliente, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE))
+								.addComponent(textFieldNomeCliente, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE))
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 								.addComponent(btnGpu)
@@ -337,7 +349,7 @@ public class PedidoGUI extends JDialog {
 					.addGap(18)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblCliente)
-						.addComponent(textFieldCliente, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(textFieldNomeCliente, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnCliente))
 					.addGap(46)
 					.addComponent(lblPecas)
@@ -360,6 +372,21 @@ public class PedidoGUI extends JDialog {
 					.addContainerGap())
 		);
 		contentPane.setLayout(gl_contentPane);
+	}
+	
+	protected void buscaCliente() {
+		
+		cliente = new Cliente();
+		
+		BuscaCliente buscaCliente = new BuscaCliente(new JFrame(), true);
+		buscaCliente.setLocationRelativeTo(null);
+		buscaCliente.setVisible(true);
+		
+		if(buscaCliente.isSelectCliente()) {
+			ClienteService clienteService = new ClienteService();
+			cliente = clienteService.findById(buscaCliente.getCodigoCliente());
+			textFieldNomeCliente.setText(cliente.getNome());
+		}
 	}
 	
 	private void digitacaoDataValida() {
@@ -429,13 +456,9 @@ public class PedidoGUI extends JDialog {
 	protected void incluirPedido() {
 		Integer toReturn = 0;
 		
-		//Cliente cliente = new Cliente();
-		
-		//cliente.setId(1);
-		
 		Pedido pedido = pegarDadosPedido();
 		
-		//pedido.setCliente(cliente);
+		pedido.setCliente(cliente);
 		
 		PedidoService pedidoService = new PedidoService();
 		
@@ -523,25 +546,13 @@ public class PedidoGUI extends JDialog {
 	private void buscarPedido() {
 		Pedido pedido = new Pedido();
 		
-		/*
-		if(VariaveisProjeto.digitacaoCampo(textFieldCodigo.getText())){
-			textFieldCodigo.requestFocus();
-			return;
-		}
-		 
-		Integer id = Integer.valueOf(textFieldCodigo.getText());
-		*/
-		
 		pedido = tabelaPedidoModel.getPedido(this.linha);
-		
-		System.out.println(pedido.toString());
-		PedidoService pedidoService = new PedidoService();
-		
-		pedido = pedidoService.findById(pedido.getId());
 		
 		textFieldCodigo.setText(String.valueOf(pedido.getId()));
 		textFieldData.setText(pedido.getData());
 		textFieldPrecoTotal.setText(String.valueOf(pedido.getPreco_total()));
+		
+		textFieldNomeCliente.setText(pedido.getCliente().getNome());
 	}
 	
 	private Pedido pegarDadosPedido() {
@@ -557,6 +568,7 @@ public class PedidoGUI extends JDialog {
 		
 		pedido.setData(textFieldData.getText());
 		pedido.setPreco_total(Integer.valueOf(textFieldPrecoTotal.getText()));
+		pedido.setCliente(cliente);
 		
 		return pedido;
 	}

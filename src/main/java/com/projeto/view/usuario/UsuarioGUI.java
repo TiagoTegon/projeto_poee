@@ -10,7 +10,9 @@ import javax.swing.border.EmptyBorder;
 import com.projeto.estrutura.util.VariaveisProjeto;
 import com.projeto.model.models.Departamento;
 import com.projeto.model.models.Usuario;
+import com.projeto.model.service.DepartamentoService;
 import com.projeto.model.service.UsuarioService;
+import com.projeto.view.departamento.BuscaDepartamento;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -61,6 +63,8 @@ public class UsuarioGUI extends JDialog {
 	private JLabel lblDepartamento;
 	private JTextField textFieldNomeDepartamento;
 	private JButton btnNewButton;
+	
+	private Departamento departamento;
 	
 	/**
 	 * Launch the application.
@@ -257,6 +261,7 @@ public class UsuarioGUI extends JDialog {
 		lblCodigo = new JLabel("Código:");
 		
 		textFieldCodigo = new JTextField();
+		textFieldCodigo.setEditable(false);
 		textFieldCodigo.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -290,6 +295,11 @@ public class UsuarioGUI extends JDialog {
 		textFieldNomeDepartamento.setColumns(10);
 		
 		btnNewButton = new JButton("Departamento");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				buscaDepartamento();
+			}
+		});
 		btnNewButton.setMnemonic(KeyEvent.VK_D);
 		btnNewButton.setToolTipText("Buscar Departamento");
 		btnNewButton.setIcon(new ImageIcon(UsuarioGUI.class.getResource("/com/projeto/estrutura/imagens/search.png")));
@@ -393,6 +403,21 @@ public class UsuarioGUI extends JDialog {
 					.addGap(21))
 		);
 		contentPane.setLayout(gl_contentPane);
+	}
+	
+	protected void buscaDepartamento() {
+		
+		departamento = new Departamento();
+		
+		BuscaDepartamento buscaDepartamento = new BuscaDepartamento(new JFrame(), true);
+		buscaDepartamento.setLocationRelativeTo(null);
+		buscaDepartamento.setVisible(true);
+		
+		if(buscaDepartamento.isSelectDepartamento()) {
+			DepartamentoService departamentoService = new DepartamentoService();
+			departamento = departamentoService.findById(buscaDepartamento.getCodigoDepartamento());
+			textFieldNomeDepartamento.setText(departamento.getNome());
+		}
 	}
 	
 	private void digitacaoNomeValido() {
@@ -500,12 +525,7 @@ public class UsuarioGUI extends JDialog {
 		Integer toReturn = 0;
 		
 		Usuario usuario = pegarDadosUsuario();
-		
-		Departamento departamento = new Departamento();
-		
-		departamento.setId(1L);
-
-		
+	
 		usuario.setDepartamento(departamento);
 		
 		UsuarioService usuarioService = new UsuarioService();
@@ -535,10 +555,6 @@ public class UsuarioGUI extends JDialog {
 		Integer toReturn = 0;
 		
 		Usuario usuario = pegarDadosUsuario();
-		
-		Departamento departamento = new Departamento();
-		
-		departamento.setId(1L);
 		
 		usuario.setDepartamento(departamento);
 			
@@ -589,11 +605,6 @@ public class UsuarioGUI extends JDialog {
 	protected void excluirUsuario() {
 		Integer toReturn = 0;
 		
-		Departamento departamento = new Departamento();
-		
-		departamento.setId(1L);
-		departamento.setNome("vendas");
-		
 		Usuario usuario = pegarDadosUsuario();
 		
 		UsuarioService usuarioService = new UsuarioService();
@@ -622,27 +633,14 @@ public class UsuarioGUI extends JDialog {
 	private void buscarUsuario() {
 		Usuario usuario = new Usuario();
 		
-		/*
-		if(VariaveisProjeto.digitacaoCampo(textFieldCodigo.getText())) {
-		
-			textFieldCodigo.requestFocus();
-			return;
-		}
-		
-		Integer id = Integer.valueOf(textFieldCodigo.getText());
-		*/
-		
 		usuario = tabelaUsuarioModel.getUsuario(this.linha);
-		
-		System.out.println(usuario.toString());
-		UsuarioService usuarioService = new UsuarioService();
-		
-		usuario = usuarioService.findById(usuario.getId());
 		
 		textFieldCodigo.setText(String.valueOf(usuario.getId()));
 		textFieldNome.setText(usuario.getUsername());
 		textFieldEmail.setText(usuario.getEmail());
 		passwordFieldSenha.setText(usuario.getPassword());
+		
+		textFieldNomeDepartamento.setText(usuario.getDepartamento().getNome());
 		
 		if(usuario.isAdmin()) {
 			rdbtnAdmin.setSelected(true);
@@ -656,6 +654,7 @@ public class UsuarioGUI extends JDialog {
 	
 	@SuppressWarnings("deprecation")
 	public Usuario pegarDadosUsuario() {
+		
 		Usuario usuario = new Usuario();
 		
 		if(VariaveisProjeto.digitacaoCampo(textFieldCodigo.getText())) {
@@ -666,10 +665,10 @@ public class UsuarioGUI extends JDialog {
 			usuario.setId(Integer.valueOf(textFieldCodigo.getText()));
 		}
 		
-		
 		usuario.setUsername(textFieldNome.getText());
 		usuario.setEmail(textFieldEmail.getText());
 		usuario.setPassword(passwordFieldSenha.getText());
+		usuario.setDepartamento(departamento);
 		
 		if(rdbtnAtivo.isSelected()) {
 			usuario.setAtivo(true);
@@ -690,6 +689,7 @@ public class UsuarioGUI extends JDialog {
 		textFieldNome.setText(VariaveisProjeto.LIMPA_CAMPO);
 		textFieldEmail.setText(VariaveisProjeto.LIMPA_CAMPO);
 		passwordFieldSenha.setText(VariaveisProjeto.LIMPA_CAMPO);
+		textFieldNomeDepartamento.setText(VariaveisProjeto.LIMPA_CAMPO);
 		rdbtnAtivo.setSelected(false);
 		rdbtnAdmin.setSelected(false);
 	}
