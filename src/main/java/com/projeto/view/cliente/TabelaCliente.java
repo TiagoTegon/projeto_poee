@@ -75,6 +75,7 @@ public class TabelaCliente extends JInternalFrame {
 	private Integer defaultPagina = 5;
 	private Integer totalPagina = 1;
 	private Integer numeroPagina = 1;
+	private JButton btnRelatorio;
 	
 	/**
 	 * Launch the application.
@@ -178,6 +179,15 @@ public class TabelaCliente extends JInternalFrame {
 			}
 		});
 		btnPesquisar.setIcon(new ImageIcon(TabelaCliente.class.getResource("/com/projeto/estrutura/imagens/search.png")));
+		
+		btnRelatorio = new JButton("Relatório");
+		btnRelatorio.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				imprimeRelatorio();
+			}
+		});
+		btnRelatorio.setIcon(new ImageIcon(TabelaCliente.class.getResource("/com/projeto/estrutura/imagens/pdf.png")));
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -215,7 +225,9 @@ public class TabelaCliente extends JInternalFrame {
 										.addComponent(btnPesquisar))
 									.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 563, GroupLayout.PREFERRED_SIZE))))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(132)
+							.addGap(25)
+							.addComponent(btnRelatorio)
+							.addGap(18)
 							.addComponent(btnIncluir)
 							.addGap(18)
 							.addComponent(btnAlterar)
@@ -260,7 +272,8 @@ public class TabelaCliente extends JInternalFrame {
 						.addComponent(btnIncluir)
 						.addComponent(btnAlterar)
 						.addComponent(btnExcluir)
-						.addComponent(btnSair))
+						.addComponent(btnSair)
+						.addComponent(btnRelatorio))
 					.addContainerGap(12, Short.MAX_VALUE))
 		);
 		
@@ -448,4 +461,10 @@ public class TabelaCliente extends JInternalFrame {
 		return tabelaCliente;
 	}
 	
+	protected void imprimeRelatorio() {
+		
+		RelCliente relCliente = new RelCliente(new JFrame(), true);
+		relCliente.setLocationRelativeTo(null);
+		relCliente.setVisible(true);
+	}
 }

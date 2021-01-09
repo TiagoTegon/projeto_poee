@@ -80,6 +80,7 @@ public class TabelaCpu extends JInternalFrame {
 	private Integer defaultPagina = 5;
 	private Integer totalPagina = 1;
 	private Integer numeroPagina = 1;
+	private JButton btnRelatorio;
 	
 	/**
 	 * Launch the application.
@@ -190,6 +191,15 @@ public class TabelaCpu extends JInternalFrame {
 			}
 		});
 		btnPesquisar.setIcon(new ImageIcon(TabelaCpu.class.getResource("/com/projeto/estrutura/imagens/search.png")));
+		
+		btnRelatorio = new JButton("Relatório");
+		btnRelatorio.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				imprimeRelatorio();
+			}
+		});
+		btnRelatorio.setIcon(new ImageIcon(TabelaCpu.class.getResource("/com/projeto/estrutura/imagens/pdf.png")));
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -227,7 +237,9 @@ public class TabelaCpu extends JInternalFrame {
 										.addComponent(btnPesquisar))
 									.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 609, GroupLayout.PREFERRED_SIZE))))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(159)
+							.addGap(52)
+							.addComponent(btnRelatorio)
+							.addGap(18)
 							.addComponent(btnIncluir)
 							.addGap(18)
 							.addComponent(btnAlterar)
@@ -271,7 +283,8 @@ public class TabelaCpu extends JInternalFrame {
 						.addComponent(btnIncluir)
 						.addComponent(btnAlterar)
 						.addComponent(btnExcluir)
-						.addComponent(btnSair))
+						.addComponent(btnSair)
+						.addComponent(btnRelatorio))
 					.addContainerGap())
 		);
 		
@@ -457,4 +470,11 @@ public class TabelaCpu extends JInternalFrame {
 		return totalRegistro;
 	}
 	
+	private void imprimeRelatorio() {
+		
+		RelCpu relCpu = new RelCpu(new JFrame(), true);
+		relCpu.setLocationRelativeTo(null);
+		relCpu.setVisible(true);
+		
+	}
 }
