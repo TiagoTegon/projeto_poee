@@ -11,6 +11,7 @@ public class VariaveisProjeto {
 	public static final String DIRETORIO_RELATORIO = "reports/";
 	public static final String SUFIXO_RELATORIO_COMPILADO = ".jasper";
 	public static final String SUFIXO_RELATORIO_FONTE = ".jrxml";
+	public static final String UPLOAD_DIR = "/nds/upload";
 	
 	public static final Integer INCLUSAO = 1;
 	public static final Integer ALTERACAO = 2;
