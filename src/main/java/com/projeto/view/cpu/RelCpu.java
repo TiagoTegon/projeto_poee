@@ -9,8 +9,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import com.projeto.model.PrintJasperReport;
 import com.projeto.model.models.Cpu;
+import com.projeto.model.models.PrintJasperReport;
 import com.projeto.model.service.CpuService;
 import com.projeto.model.service.JasperReportsService;
 

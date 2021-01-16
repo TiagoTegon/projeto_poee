@@ -22,6 +22,8 @@ public class Cliente {
 
 	private List<Pedido> pedido;
 	
+	private String foto;
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "CLIENTE_ID")
@@ -72,6 +74,15 @@ public class Cliente {
 	}
 	public void setPedido(List<Pedido> pedido) {
 		this.pedido = pedido;
+	}
+	
+	@Column(name = "CLIENTE_FOTO", nullable = true)
+	public String getFoto() {
+		return foto;
+	}
+	
+	public void setFoto(String foto) {
+		this.foto = foto;
 	}
 	
 	@Override

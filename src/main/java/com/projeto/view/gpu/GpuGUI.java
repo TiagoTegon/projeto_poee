@@ -70,26 +70,6 @@ public class GpuGUI extends JDialog {
 	private int linha = 0;
 	private int acao = 0;
 
-	/**
-	 * Launch the application.
-	 */
-	/*
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					GpuGUI frame = new GpuGUI();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}*/
-
-	/**
-	 * Create the frame.
-	 */
 	public GpuGUI(JFrame frame, boolean modal, JTable tabelaGpu, TabelaGpuModel tabelaGpuModel, int linha, int acao) {
 		
 		super(frame, modal);
@@ -131,7 +111,6 @@ public class GpuGUI extends JDialog {
 	private void initComponents() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(GpuGUI.class.getResource("/com/projeto/estrutura/imagens/book.png")));
 		setTitle("Cadastro de Gpu");
-		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 651, 564);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -154,17 +133,16 @@ public class GpuGUI extends JDialog {
 		lblVram = new JLabel("VRAM:");
 
 		textFieldCodigo = new JTextField();
+		textFieldCodigo.setEditable(false);
 		textFieldCodigo.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
-				//buscarGpu();
 			}
 		});
 		textFieldCodigo.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-					//buscarGpu();
 					textFieldFabricante.requestFocus();
 				}
 			}
@@ -733,6 +711,8 @@ public class GpuGUI extends JDialog {
 			showMensagem("Inclusão do Registro realizada com sucesso!",
 					"OK", JOptionPane.OK_OPTION);
 			limpaTextoCampo();
+			tabelaGpuModel.saveGpu(gpu);
+			tabelaGpu.setModel(tabelaGpuModel);
 			tabelaGpuModel.fireTableDataChanged();
 			gpu = new Gpu();
 		}
@@ -756,6 +736,8 @@ public class GpuGUI extends JDialog {
 		if(toReturn == VariaveisProjeto.ALTERACAO_REALIZADA) {
 			showMensagem("Alteração do Registro realizada com sucesso!",
 					"OK", JOptionPane.OK_OPTION);
+			tabelaGpuModel.updateGpu(gpu, this.linha);
+			tabelaGpu.setModel(tabelaGpuModel);
 			tabelaGpuModel.fireTableDataChanged();
 			limpaTextoCampo();
 			gpu = new Gpu();
@@ -830,23 +812,8 @@ public class GpuGUI extends JDialog {
 
 	private void buscarGpu() {
 		Gpu gpu = new Gpu();
-
-		/*
-		if(VariaveisProjeto.digitacaoCampo(textFieldCodigo.getText())){
-			textFieldCodigo.requestFocus();
-			return;
-		}
-
-		Integer id = Integer.valueOf(textFieldCodigo.getText());
-		*/
 		
 		gpu = tabelaGpuModel.getGpu(this.linha);
-
-		System.out.println(gpu.toString());
-		
-		//GpuService gpuService = new GpuService();
-
-		//gpu = gpuService.findById(id);
 
 		textFieldCodigo.setText(String.valueOf(gpu.getId()));
 		textFieldFabricante.setText(gpu.getFabricante());

@@ -5,7 +5,7 @@ import java.io.InputStream;
 import javax.swing.JFrame;
 
 import com.projeto.estrutura.util.VariaveisProjeto;
-import com.projeto.model.PrintJasperReport;
+import com.projeto.model.models.PrintJasperReport;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;

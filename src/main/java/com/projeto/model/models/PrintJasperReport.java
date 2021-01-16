@@ -1,4 +1,4 @@
-package com.projeto.model;
+package com.projeto.model.models;
 
 import java.util.Collection;
 import java.util.HashMap;

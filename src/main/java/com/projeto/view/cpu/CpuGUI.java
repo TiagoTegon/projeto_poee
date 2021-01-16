@@ -75,26 +75,6 @@ public class CpuGUI extends JDialog {
 	private int linha = 0;
 	private int acao = 0;
 	
-	/**
-	 * Launch the application.
-	 */
-	/*
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					CpuGUI frame = new CpuGUI();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}*/
-
-	/**
-	 * Create the frame.
-	 */
 	public CpuGUI(JFrame frame, boolean modal, JTable tabelaCpu, TabelaCpuModel tabelaCpuModel, int linha, int acao) {
 		
 		super(frame, modal);
@@ -136,7 +116,6 @@ public class CpuGUI extends JDialog {
 	private void initComponents() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(CpuGUI.class.getResource("/com/projeto/estrutura/imagens/book.png")));
 		setTitle("Cadastro de CPU");
-		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 623, 521);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -161,17 +140,16 @@ public class CpuGUI extends JDialog {
 		lblVelocidade = new JLabel("Velocidade:");
 		
 		textFieldCodigo = new JTextField();
+		textFieldCodigo.setEditable(false);
 		textFieldCodigo.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
-				//buscarCpu();
 			}
 		});
 		textFieldCodigo.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-					//buscarCpu();
 					textFieldCache.requestFocus();
 				}
 			}
@@ -816,6 +794,8 @@ public class CpuGUI extends JDialog {
 			showMensagem("Inclusão do Registro realizada com sucesso!",
 							"OK", JOptionPane.OK_OPTION);
 			limpaTextoCampo();
+			tabelaCpuModel.saveCpu(cpu);
+			tabelaCpu.setModel(tabelaCpuModel);
 			tabelaCpuModel.fireTableDataChanged();
 			cpu = new Cpu();
 		}
@@ -839,6 +819,8 @@ public class CpuGUI extends JDialog {
 		if(toReturn == VariaveisProjeto.ALTERACAO_REALIZADA) {
 			showMensagem("Alteração do Registro realizada com sucesso!",
 							"OK", JOptionPane.OK_OPTION);
+			tabelaCpuModel.updateCpu(cpu, this.linha);
+			tabelaCpu.setModel(tabelaCpuModel);
 			tabelaCpuModel.fireTableDataChanged();
 			limpaTextoCampo();
 			cpu = new Cpu();
@@ -920,22 +902,7 @@ public class CpuGUI extends JDialog {
 	private void buscarCpu() {
 		Cpu cpu = new Cpu();
 		
-		/*
-		if(VariaveisProjeto.digitacaoCampo(textFieldCodigo.getText())){
-			textFieldCodigo.requestFocus();
-			return;
-		}
-		 
-		Integer id = Integer.valueOf(textFieldCodigo.getText());
-		*/
-		
 		cpu = tabelaCpuModel.getCpu(this.linha);
-		
-		System.out.println(cpu.toString());
-		
-		//CpuService cpuService = new CpuService();
-		
-		//cpu = cpuService.findById(id);
 		
 		textFieldCodigo.setText(String.valueOf(cpu.getId()));
 		textFieldCache.setText(String.valueOf(cpu.getCache()));

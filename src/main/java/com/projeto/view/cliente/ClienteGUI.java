@@ -9,17 +9,24 @@ import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 
 import com.projeto.estrutura.util.VariaveisProjeto;
+import com.projeto.estrutura.util.imagem.ImageFilter;
+import com.projeto.estrutura.util.imagem.ImagePreview;
 import com.projeto.model.models.Cliente;
+import com.projeto.model.models.Foto;
 import com.projeto.model.service.ClienteService;
+import com.projeto.model.service.LocalFotoStorageService;
 
+import javax.imageio.ImageIO;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingConstants;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -29,6 +36,14 @@ import java.awt.Toolkit;
 import javax.swing.ImageIcon;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Objects;
+
+import javax.swing.border.BevelBorder;
+import java.awt.Dimension;
 
 public class ClienteGUI extends JDialog {
 
@@ -56,27 +71,13 @@ public class ClienteGUI extends JDialog {
 	private TabelaClienteModel tabelaClienteModel;
 	private int linha = 0;
 	private int acao = 0;
+	
+	private String nomeFoto;
+	private JLabel lblIconFoto;
+	private JButton btnAddFoto;
+	private JButton btnExcluirFoto;
 
-	/**
-	 * Launch the application.
-	 */
-	/*
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ClienteGUI frame = new ClienteGUI();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}*/
-
-	/**
-	 * Create the frame.
-	 */
+	
 	public ClienteGUI(JFrame frame, boolean modal, JTable tabelaCliente, TabelaClienteModel tabelaClienteModel, int linha, int acao) {
 		
 		super(frame, modal);
@@ -118,8 +119,7 @@ public class ClienteGUI extends JDialog {
 	private void initComponents() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/user.png")));
 		setTitle("Cadastro de Cliente");
-		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 548, 455);
+		setBounds(100, 100, 832, 455);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -127,12 +127,12 @@ public class ClienteGUI extends JDialog {
 		JLabel lblCodigo = new JLabel("Código:");
 
 		textFieldCodigo = new JTextField();
+		textFieldCodigo.setEditable(false);
 		textFieldCodigo.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-					//buscarCliente();
 					textFieldNome.requestFocus();
 				}
 			}
@@ -140,7 +140,6 @@ public class ClienteGUI extends JDialog {
 		textFieldCodigo.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
-				//buscarCliente();
 			}
 		});
 		textFieldCodigo.setColumns(10);
@@ -307,91 +306,167 @@ public class ClienteGUI extends JDialog {
 
 		checkTelefone = new JLabel("");
 		checkTelefone.setIcon(new ImageIcon(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/ok.png")));
+		
+		lblIconFoto = new JLabel("");
+		lblIconFoto.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		
+		btnAddFoto = new JButton("");
+		btnAddFoto.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				carregarFoto();
+			}
+		});
+		btnAddFoto.setToolTipText("Carregar Foto");
+		btnAddFoto.setIcon(new ImageIcon(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/iconfinder_icon-camera_211634.png")));
+		
+		btnExcluirFoto = new JButton("");
+		btnExcluirFoto.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				excluirFoto();
+			}
+		});
+		btnExcluirFoto.setToolTipText("Excluir Foto");
+		btnExcluirFoto.setIcon(new ImageIcon(ClienteGUI.class.getResource("/com/projeto/estrutura/imagens/iconFechar.png")));
 
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
-				gl_contentPane.createParallelGroup(Alignment.LEADING)
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-						.addContainerGap(48, Short.MAX_VALUE)
+					.addGap(197)
+					.addComponent(btnIncluir)
+					.addGap(26)
+					.addComponent(btnAlterar)
+					.addGap(18)
+					.addComponent(btnExcluir)
+					.addGap(18)
+					.addComponent(btnSair)
+					.addContainerGap(227, Short.MAX_VALUE))
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addGap(45)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblCPF)
+						.addComponent(lblEmail)
+						.addComponent(lblTelefone)
+						.addComponent(lblNome)
+						.addComponent(lblCodigo))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblCPF)
-								.addComponent(lblEmail)
-								.addComponent(lblTelefone)
-								.addComponent(lblNome)
-								.addComponent(lblCodigo)
-								.addComponent(btnIncluir))
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+							.addComponent(textFieldCodigo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addGroup(gl_contentPane.createSequentialGroup()
+								.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+									.addComponent(textFieldEmail, 257, 257, 257)
+									.addComponent(textFieldNome, GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
+									.addComponent(textFieldCPF, 257, 257, 257))
 								.addGroup(gl_contentPane.createSequentialGroup()
-										.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-												.addComponent(textFieldCodigo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-												.addGroup(gl_contentPane.createSequentialGroup()
-														.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
-																.addComponent(textFieldEmail)
-																.addComponent(textFieldNome, GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
-																.addComponent(textFieldCPF)
-																.addGroup(Alignment.LEADING, gl_contentPane.createSequentialGroup()
-																		.addGap(31)
-																		.addComponent(btnAlterar)
-																		.addPreferredGap(ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-																		.addComponent(btnExcluir)
-																		.addGap(27)))
-														.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-																.addGroup(gl_contentPane.createSequentialGroup()
-																		.addGap(11)
-																		.addComponent(btnSair))
-																.addGroup(gl_contentPane.createSequentialGroup()
-																		.addGap(18)
-																		.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-																				.addComponent(checkEmail)
-																				.addComponent(checkNome)
-																				.addComponent(checkCPF))))
-														.addGap(15)))
-										.addContainerGap(33, Short.MAX_VALUE))
-								.addGroup(gl_contentPane.createSequentialGroup()
-										.addComponent(textFieldTelefone, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(ComponentPlacement.UNRELATED)
-										.addComponent(checkTelefone)
-										.addGap(206))))
-				);
+									.addGap(18)
+									.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+										.addComponent(checkEmail)
+										.addComponent(checkNome)
+										.addComponent(checkCPF)))))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(textFieldTelefone, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(checkTelefone)
+							.addGap(211)))
+					.addGap(82)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
+						.addComponent(lblIconFoto, GroupLayout.PREFERRED_SIZE, 174, GroupLayout.PREFERRED_SIZE)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(btnAddFoto, GroupLayout.PREFERRED_SIZE, 83, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(btnExcluirFoto, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+					.addGap(56))
+		);
 		gl_contentPane.setVerticalGroup(
-				gl_contentPane.createParallelGroup(Alignment.LEADING)
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-						.addGap(83)
-						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addGap(82)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 								.addComponent(lblCodigo)
 								.addComponent(textFieldCodigo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addGap(18)
-						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+							.addGap(18)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 								.addComponent(textFieldNome, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 								.addComponent(lblNome)
 								.addComponent(checkNome))
-						.addGap(18)
-						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+							.addGap(18)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 								.addComponent(lblEmail)
 								.addComponent(textFieldEmail, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 								.addComponent(checkEmail))
-						.addGap(18)
-						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+							.addGap(18)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 								.addComponent(lblCPF)
 								.addComponent(textFieldCPF, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 								.addComponent(checkCPF))
-						.addGap(18)
-						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+							.addGap(18)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 								.addComponent(lblTelefone)
 								.addComponent(textFieldTelefone, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(checkTelefone))
-						.addGap(94)
-						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnIncluir)
-								.addComponent(btnAlterar)
-								.addComponent(btnExcluir)
-								.addComponent(btnSair))
-						.addContainerGap(32, Short.MAX_VALUE))
-				);
+								.addComponent(checkTelefone)))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addGap(97)
+							.addComponent(lblIconFoto, GroupLayout.PREFERRED_SIZE, 133, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+								.addComponent(btnAddFoto)
+								.addComponent(btnExcluirFoto))))
+					.addGap(85)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnAlterar)
+						.addComponent(btnIncluir)
+						.addComponent(btnExcluir)
+						.addComponent(btnSair))
+					.addContainerGap(32, Short.MAX_VALUE))
+		);
 		contentPane.setLayout(gl_contentPane);
 	}
 
+	protected void carregarFoto() {
+		
+		JFileChooser fc = new JFileChooser();
+		fc.addChoosableFileFilter(new ImageFilter());
+		fc.setAcceptAllFileFilterUsed(false);
+		fc.setAccessory(new ImagePreview(fc));
+		
+		int returnVal = fc.showDialog(lblIconFoto, "Anexar");
+		
+		if(lblIconFoto.getIcon() != null) {
+			excluirFoto();
+		}
+		
+		if(returnVal == JFileChooser.APPROVE_OPTION) {
+			try {
+				File file = fc.getSelectedFile();
+				FileInputStream fin = new FileInputStream(file);
+				BufferedImage img = ImageIO.read(fin);
+				ImageIcon icon = new ImageIcon(img);
+				lblIconFoto.setIcon(icon);
+				lblIconFoto.setHorizontalAlignment(SwingConstants.CENTER);
+				LocalFotoStorageService localFotoStorageService = new LocalFotoStorageService();
+				Foto foto = new Foto();
+				foto.setNomeArquivo(file.getName());
+				foto.setInputStream(fin);
+				foto.setFile(file);
+				nomeFoto = localFotoStorageService.armazenar(foto);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	protected void excluirFoto() {
+		Cliente cliente = tabelaClienteModel.getCliente(this.linha);
+		nomeFoto = cliente.getFoto();
+		LocalFotoStorageService localFotoStorageService = new LocalFotoStorageService();
+		localFotoStorageService.remover(nomeFoto);
+		lblIconFoto.setIcon(null);
+		lblIconFoto.revalidate();
+	}
+	
 	private void digitacaoNomeValido() {
 		status = true;
 		mudaStatusCheckNome();
@@ -530,7 +605,6 @@ public class ClienteGUI extends JDialog {
 		Integer toReturn = 0;
 		
 		Cliente cliente = pegarDadosCliente();
-		System.out.println(cliente.toString());
 
 		ClienteService clienteService = new ClienteService();
 
@@ -546,6 +620,8 @@ public class ClienteGUI extends JDialog {
 			showMensagem("Inclusão do Registro realizada com sucesso!",
 							"OK", JOptionPane.OK_OPTION);
 			limpaTextoCampo();
+			tabelaClienteModel.saveCliente(cliente);
+			tabelaCliente.setModel(tabelaClienteModel);
 			tabelaClienteModel.fireTableDataChanged();
 			cliente = new Cliente();
 		}
@@ -570,6 +646,8 @@ public class ClienteGUI extends JDialog {
 			showMensagem("Alteração do Registro realizada com sucesso!",
 							"OK", JOptionPane.OK_OPTION);
 			
+			tabelaClienteModel.updateCliente(cliente, this.linha);
+			tabelaCliente.setModel(tabelaClienteModel);
 			tabelaClienteModel.fireTableDataChanged();
 			limpaTextoCampo();
 			cliente = new Cliente();
@@ -629,28 +707,31 @@ public class ClienteGUI extends JDialog {
 	private void buscarCliente() {
 		Cliente cliente = new Cliente();
 		
-		/*
-		if(VariaveisProjeto.digitacaoCampo(textFieldCodigo.getText())) {
-			textFieldCodigo.requestFocus();
-			return;
-		}
-		
-		Integer id = Integer.valueOf(textFieldCodigo.getText());
-		*/
-		
 		cliente = tabelaClienteModel.getCliente(this.linha);
-		
-		System.out.println(cliente.toString());
-		
-		//ClienteService clienteService = new ClienteService();
-		
-		//cliente = clienteService.findById(cliente.getId());
 
 		textFieldCodigo.setText(String.valueOf(cliente.getId()));
 		textFieldNome.setText(cliente.getNome());
 		textFieldEmail.setText(cliente.getEmail());
 		textFieldCPF.setText(cliente.getCpf());
 		textFieldTelefone.setText(cliente.getTelefone());
+		nomeFoto = cliente.getFoto();
+		
+		if(!Objects.isNull(nomeFoto)) {
+			LocalFotoStorageService localFotoStorageService = new LocalFotoStorageService();
+			String fileInput = localFotoStorageService.recuperar(nomeFoto);
+			File file = new File(fileInput);
+			FileInputStream fis;
+			try {
+				fis = new FileInputStream(file);
+				BufferedImage img = ImageIO.read(fis);
+				ImageIcon imagem = new ImageIcon(img);
+				lblIconFoto.setIcon(imagem);
+				lblIconFoto.setHorizontalAlignment(SwingConstants.CENTER);
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 	public Cliente pegarDadosCliente() {
@@ -666,6 +747,7 @@ public class ClienteGUI extends JDialog {
 		cliente.setEmail(textFieldEmail.getText());
 		cliente.setCpf(textFieldCPF.getText());
 		cliente.setTelefone(textFieldTelefone.getText());
+		cliente.setFoto(nomeFoto);
 		return cliente;
 	}
 

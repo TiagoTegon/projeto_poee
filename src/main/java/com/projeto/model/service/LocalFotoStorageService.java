@@ -72,12 +72,11 @@ public class LocalFotoStorageService {
 		}
 	}
 	
-	private String gerarNomeArquivo(String nomeOriginal) {
-		return UUID.randomUUID().toString()+"_"+nomeOriginal;
-	}
-
 	private Path getArquivoPath(String nomeArquivo) {
 		return diretorioFoto.resolve(Paths.get(nomeArquivo));
 	}
-
+	
+	private String gerarNomeArquivo(String nomeOriginal) {
+		return UUID.randomUUID().toString()+"_"+nomeOriginal;
+	}
 }

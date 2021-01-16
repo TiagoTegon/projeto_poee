@@ -69,26 +69,6 @@ public class PedidoGUI extends JDialog {
 	
 	private Cliente cliente;
 
-	/**
-	 * Launch the application.
-	 */
-	/*
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					PedidoGUI frame = new PedidoGUI();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}*/
-
-	/**
-	 * Create the frame.
-	 */
 	public PedidoGUI(JFrame frame, boolean modal, JTable tabelaPedido, TabelaPedidoModel tabelaPedidoModel, int linha, int acao) {
 		
 		super(frame, modal);
@@ -130,7 +110,6 @@ public class PedidoGUI extends JDialog {
 	private void initComponents() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(PedidoGUI.class.getResource("/com/projeto/estrutura/imagens/book_open.png")));
 		setTitle("Cadastro de Pedido");
-		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 635, 520);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -147,14 +126,12 @@ public class PedidoGUI extends JDialog {
 		textFieldCodigo.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
-				//buscarPedido();
 			}
 		});
 		textFieldCodigo.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-					//buscarPedido();
 					textFieldData.requestFocus();
 				}
 			}
@@ -474,6 +451,8 @@ public class PedidoGUI extends JDialog {
 			showMensagem("Inclusão do Registro realizada com sucesso!",
 							"OK", JOptionPane.OK_OPTION);
 			limpaTextoCampo();
+			tabelaPedidoModel.savePedido(pedido);
+			tabelaPedido.setModel(tabelaPedidoModel);
 			tabelaPedidoModel.fireTableDataChanged();
 			pedido = new Pedido();
 		}
@@ -497,6 +476,8 @@ public class PedidoGUI extends JDialog {
 		if(toReturn == VariaveisProjeto.ALTERACAO_REALIZADA) {
 			showMensagem("Alteração do Registro realizada com sucesso!",
 							"OK", JOptionPane.OK_OPTION);
+			tabelaPedidoModel.updatePedido(pedido, this.linha);
+			tabelaPedido.setModel(tabelaPedidoModel);
 			tabelaPedidoModel.fireTableDataChanged();
 			limpaTextoCampo();
 			pedido = new Pedido();
@@ -553,6 +534,9 @@ public class PedidoGUI extends JDialog {
 		textFieldPrecoTotal.setText(String.valueOf(pedido.getPreco_total()));
 		
 		textFieldNomeCliente.setText(pedido.getCliente().getNome());
+		cliente = new Cliente();
+		cliente.setId(pedido.getCliente().getId());
+		cliente.setNome(pedido.getCliente().getNome());
 	}
 	
 	private Pedido pegarDadosPedido() {
